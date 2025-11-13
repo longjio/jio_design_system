@@ -61,7 +61,7 @@ const Header = ({
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div" onClick={onTitleClick} sx={{ cursor: 'pointer' }}>
-                        SSG PAY SYSTEM
+                        SSG DESIGN SYSTEM
                     </Typography>
                 </Box>
                 <Box sx={{ flexGrow: 1 }} />
