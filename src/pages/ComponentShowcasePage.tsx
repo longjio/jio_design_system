@@ -178,7 +178,7 @@ const ComponentShowcasePage = () => {
                         Built with React 18.3.1, TypeScript 4.9.5, and Material-UI v7
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                        © 2024 SSG Pay System Design System
+                        © 2025 SSG Design System
                     </Typography>
                 </Box>
             </Stack>
