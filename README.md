@@ -1,10 +1,10 @@
-# SSG Design System
+# JIO Design System
 
 > MUI 기반 디자인 시스템 및 컴포넌트 라이브러리
 
-SSG Design System은 React + TypeScript로 구축된 디자인 시스템 사이트입니다. Material-UI(MUI) v7 컴포넌트를 기반으로 재사용 가능한 컴포넌트 라이브러리를 문서화하고 제공하며, 데스크톱과 모바일 환경 모두를 지원하는 반응형 레이아웃을 갖추고 있습니다.
+JIO Design System은 React + TypeScript로 구축된 디자인 시스템 사이트입니다. Material-UI(MUI) v7 컴포넌트를 기반으로 재사용 가능한 컴포넌트 라이브러리를 문서화하고 제공하며, 데스크톱과 모바일 환경 모두를 지원하는 반응형 레이아웃을 갖추고 있습니다.
 
-**Live Demo**: [https://longjio.github.io/ssg_design_system](https://longjio.github.io/ssg_design_system)
+**Live Demo**: [https://jiodesignsystem.vercel.app](https://jiodesignsystem.vercel.app)
 
 ## 주요 특징
 
@@ -47,8 +47,8 @@ SSG Design System은 React + TypeScript로 구축된 디자인 시스템 사이�
 
 ```bash
 # 저장소 클론
-git clone https://github.com/longjio/ssg_design_system.git
-cd ssg_design_system
+git clone https://github.com/longjio/jio_design_system.git
+cd jio_design_system
 
 # 의존성 설치
 npm install
@@ -69,9 +69,6 @@ npm start
 ```bash
 # 프로덕션 빌드
 npm run build
-
-# GitHub Pages 배포
-npm run deploy
 ```
 
 ### 테스트
@@ -93,7 +90,7 @@ npm run build-storybook
 ## 프로젝트 구조
 
 ```
-ssg_design_system/
+jio_design_system/
 ├── src/
 │   ├── components/          # 재사용 가능한 컴포넌트
 │   │   ├── button/         # 버튼 컴포넌트들
@@ -287,7 +284,6 @@ import { ComponentShowcase } from './components/common';
 | `npm start` | 개발 서버 시작 (127.0.0.1:3000) |
 | `npm run build` | 프로덕션 빌드 |
 | `npm test` | 테스트 실행 |
-| `npm run deploy` | GitHub Pages 배포 |
 | `npm run storybook` | Storybook 개발 서버 시작 |
 | `npm run build-storybook` | Storybook 정적 빌드 |
 
@@ -305,13 +301,9 @@ import { ComponentShowcase } from './components/common';
 
 ## 배포
 
-이 프로젝트는 GitHub Pages에 자동 배포됩니다:
+이 프로젝트는 Vercel에 자동 배포됩니다. GitHub의 `main` 브랜치에 push하면 자동으로 배포가 시작됩니다.
 
-```bash
-npm run deploy
-```
-
-배포 URL: [https://longjio.github.io/ssg_design_system](https://longjio.github.io/ssg_design_system)
+배포 URL: [https://jiodesignsystem.vercel.app](https://jiodesignsystem.vercel.app)
 
 ## 라이선스
 
