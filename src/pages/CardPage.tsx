@@ -13,6 +13,7 @@ import {
 import { DsCard } from '../components/surface/DsCard';
 import { RecipeReviewCard, RecipeReviewCardProps } from '../components/surface/RecipeReviewCard';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 
 // 이미지 import
 import Image1 from '../assets/images/img_burger.jpg';
@@ -41,6 +42,57 @@ const cardData = {
 };
 
 const CardPage = () => {
+    // DsCard Props 정의
+    const cardProps: PropDefinition[] = [
+        {
+            name: 'variant',
+            type: "'elevation' | 'outlined'",
+            defaultValue: "'outlined'",
+            description: 'Card의 시각적 스타일을 결정합니다.',
+        },
+        {
+            name: 'elevation',
+            type: 'number',
+            defaultValue: '1',
+            description: 'Card의 그림자 깊이를 지정합니다. (variant="elevation"일 때만 적용)',
+        },
+        {
+            name: 'overline',
+            type: 'string',
+            description: 'Card 상단에 표시될 작은 텍스트입니다.',
+        },
+        {
+            name: 'title',
+            type: 'string',
+            description: 'Card의 제목입니다.',
+        },
+        {
+            name: 'subheader',
+            type: 'string',
+            description: 'Card 제목 아래에 표시될 부제목입니다.',
+        },
+        {
+            name: 'content',
+            type: 'React.ReactNode',
+            description: 'Card의 주요 콘텐츠입니다.',
+        },
+        {
+            name: 'actionText',
+            type: 'string',
+            description: 'Card 하단 액션 버튼의 텍스트입니다.',
+        },
+        {
+            name: 'onActionClick',
+            type: '() => void',
+            description: '액션 버튼을 클릭할 때 호출되는 함수입니다.',
+        },
+        {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: '커스텀 레이아웃을 위한 자식 요소입니다. 이 prop을 사용하면 다른 구조화된 props는 무시됩니다.',
+        },
+    ];
+
     const handleLearnMoreClick = (cardTitle: string) => {
         alert(`"${cardTitle}" 카드에서 버튼이 클릭되었습니다!`);
     };
@@ -260,6 +312,14 @@ const CardPage = () => {
                 }
                 code={basicCardCode}
             />
+
+                {/* API 문서 섹션 */}
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                        API
+                    </Typography>
+                    <PropsTable props={cardProps} title="DsCard Props" />
+                </Box>
             </Stack>
         </Box>
     );

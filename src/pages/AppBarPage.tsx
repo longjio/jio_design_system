@@ -15,6 +15,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { DsAppBar } from '../components/surface/DsAppBar';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 
 // --- SearchAppBar styles (from original file) ---
 const Search = styled('div')(({ theme }) => ({
@@ -60,6 +61,53 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 // --- End of styles ---
 
 const AppBarPage = () => {
+    // DsAppBar Props 정의
+    const appBarProps: PropDefinition[] = [
+        {
+            name: 'title',
+            type: 'string',
+            description: 'AppBar에 표시될 제목입니다.',
+        },
+        {
+            name: 'onMenuClick',
+            type: '() => void',
+            description: '메뉴 아이콘을 클릭할 때 호출되는 함수입니다.',
+        },
+        {
+            name: 'showMenuButton',
+            type: 'boolean',
+            defaultValue: 'true',
+            description: '메뉴 버튼의 표시 여부를 결정합니다.',
+        },
+        {
+            name: 'actionButtonText',
+            type: 'string',
+            description: '우측에 표시될 액션 버튼의 텍스트입니다.',
+        },
+        {
+            name: 'onActionButtonClick',
+            type: '() => void',
+            description: '액션 버튼을 클릭할 때 호출되는 함수입니다.',
+        },
+        {
+            name: 'position',
+            type: "'fixed' | 'absolute' | 'sticky' | 'static' | 'relative'",
+            defaultValue: "'static'",
+            description: 'AppBar의 위치 속성을 지정합니다.',
+        },
+        {
+            name: 'color',
+            type: "'default' | 'inherit' | 'primary' | 'secondary' | 'transparent'",
+            defaultValue: "'primary'",
+            description: 'AppBar의 색상을 결정합니다.',
+        },
+        {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'AppBar 내부에 커스텀 콘텐츠를 렌더링할 수 있습니다.',
+        },
+    ];
+
     const [anchorElProfile, setAnchorElProfile] = useState<null | HTMLElement>(null);
     const openProfileMenu = Boolean(anchorElProfile);
 
@@ -249,6 +297,14 @@ const AppBarPage = () => {
                 }
                 code={profileMenuAppBarCode}
             />
+
+                {/* API 문서 섹션 */}
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                        API
+                    </Typography>
+                    <PropsTable props={appBarProps} title="DsAppBar Props" />
+                </Box>
             </Stack>
         </Box>
     );

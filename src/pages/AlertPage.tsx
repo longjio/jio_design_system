@@ -2,9 +2,56 @@
 import React from 'react';
 import { Box, Stack, Button, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsAlert from '../components/feedback/DsAlert';
 
 const AlertPage = () => {
+  // DsAlert Props 정의
+  const alertProps: PropDefinition[] = [
+    {
+      name: 'severity',
+      type: "'error' | 'warning' | 'info' | 'success'",
+      defaultValue: "'info'",
+      description: 'Alert의 심각도 수준을 결정합니다. 색상과 아이콘이 자동으로 설정됩니다.',
+    },
+    {
+      name: 'variant',
+      type: "'standard' | 'filled' | 'outlined'",
+      defaultValue: "'standard'",
+      description: 'Alert의 시각적 스타일을 결정합니다.',
+    },
+    {
+      name: 'title',
+      type: 'string',
+      description: 'Alert의 제목입니다.',
+    },
+    {
+      name: 'children',
+      type: 'React.ReactNode',
+      description: 'Alert의 주요 메시지 콘텐츠입니다.',
+    },
+    {
+      name: 'onClose',
+      type: '() => void',
+      description: '닫기 버튼을 클릭할 때 호출되는 함수입니다. 이 prop을 제공하면 닫기 버튼이 표시됩니다.',
+    },
+    {
+      name: 'action',
+      type: 'React.ReactNode',
+      description: 'Alert 우측에 표시할 커스텀 액션 요소입니다.',
+    },
+    {
+      name: 'icon',
+      type: 'React.ReactNode',
+      description: '기본 아이콘을 대체할 커스텀 아이콘입니다.',
+    },
+    {
+      name: 'color',
+      type: "'error' | 'warning' | 'info' | 'success'",
+      description: 'Alert의 색상을 직접 지정합니다.',
+    },
+  ];
+
   const standardCode = `
 <DsAlert severity="error" title="Error">This is an error alert — check it out!</DsAlert>
 <DsAlert severity="warning" title="Warning">This is a warning alert — check it out!</DsAlert>
@@ -101,6 +148,14 @@ const AlertPage = () => {
         }
         code={actionCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={alertProps} title="DsAlert Props" />
+        </Box>
       </Stack>
     </Box>
   );

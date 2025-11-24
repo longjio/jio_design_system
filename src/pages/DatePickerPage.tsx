@@ -7,8 +7,64 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import DsDateRangePicker from '../components/mui_x/date/DsDateRangePicker';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 
 export default function DsDatePickerPage() {
+    // DsDatePicker Props 정의
+    const datePickerProps: PropDefinition[] = [
+        {
+            name: 'label',
+            type: 'string',
+            description: 'Date Picker의 레이블 텍스트입니다.',
+        },
+        {
+            name: 'value',
+            type: 'Dayjs | null',
+            description: '현재 선택된 날짜 값입니다.',
+        },
+        {
+            name: 'onChange',
+            type: '(value: Dayjs | null) => void',
+            description: '날짜가 변경될 때 호출되는 함수입니다.',
+        },
+        {
+            name: 'disabled',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 Date Picker가 비활성화됩니다.',
+        },
+        {
+            name: 'readOnly',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 날짜를 수정할 수 없습니다.',
+        },
+    ];
+
+    // DsDateRangePicker Props 정의
+    const dateRangePickerProps: PropDefinition[] = [
+        {
+            name: 'label',
+            type: 'string',
+            description: 'Date Range Picker의 레이블 텍스트입니다.',
+        },
+        {
+            name: 'onChange',
+            type: '(startDate: Dayjs | null, endDate: Dayjs | null) => void',
+            description: '날짜 범위가 변경될 때 호출되는 함수입니다. 시작일과 종료일을 인자로 받습니다.',
+        },
+        {
+            name: 'initialStartDate',
+            type: 'Dayjs | null',
+            description: '초기 시작 날짜입니다.',
+        },
+        {
+            name: 'initialEndDate',
+            type: 'Dayjs | null',
+            description: '초기 종료 날짜입니다.',
+        },
+    ];
+
     const [controlledValue, setControlledValue] = useState<Dayjs | null>(dayjs());
     const [disabledValue, setDisabledValue] = useState<Dayjs | null>(dayjs('2023-01-15'));
     const [selectedRangeStartDate, setSelectedRangeStartDate] = useState<Dayjs | null>(null);
@@ -132,6 +188,17 @@ export default function DsDatePickerPage() {
                     }
                     code={dateRangeCode}
                 />
+
+                {/* API 문서 섹션 */}
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                        API
+                    </Typography>
+                    <PropsTable props={datePickerProps} title="DsDatePicker Props" />
+                    <Box sx={{ mt: 3 }}>
+                        <PropsTable props={dateRangePickerProps} title="DsDateRangePicker Props" />
+                    </Box>
+                </Box>
                 </Stack>
             </Box>
         </LocalizationProvider>

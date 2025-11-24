@@ -2,9 +2,145 @@
 import React, { useState } from 'react';
 import { Box, Stack, TablePagination, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsPagination from '../components/navigation/DsPagination';
 
 const PaginationPage = () => {
+  // DsPagination Props 정의
+  const paginationProps: PropDefinition[] = [
+    {
+      name: 'count',
+      type: 'number',
+      description: '총 페이지 수입니다.',
+    },
+    {
+      name: 'page',
+      type: 'number',
+      description: '현재 선택된 페이지입니다. 1부터 시작합니다.',
+    },
+    {
+      name: 'onChange',
+      type: '(event: React.ChangeEvent<unknown>, page: number) => void',
+      description: '페이지가 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'variant',
+      type: "'text' | 'outlined'",
+      defaultValue: "'text'",
+      description: '페이지네이션의 시각적 스타일을 결정합니다.',
+    },
+    {
+      name: 'color',
+      type: "'primary' | 'secondary' | 'standard'",
+      defaultValue: "'standard'",
+      description: '페이지네이션의 색상을 결정합니다.',
+    },
+    {
+      name: 'shape',
+      type: "'circular' | 'rounded'",
+      defaultValue: "'circular'",
+      description: '페이지 버튼의 모양을 결정합니다.',
+    },
+    {
+      name: 'size',
+      type: "'small' | 'medium' | 'large'",
+      defaultValue: "'medium'",
+      description: '페이지네이션의 크기를 결정합니다.',
+    },
+    {
+      name: 'showFirstButton',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '첫 페이지로 이동하는 버튼을 표시합니다.',
+    },
+    {
+      name: 'showLastButton',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '마지막 페이지로 이동하는 버튼을 표시합니다.',
+    },
+    {
+      name: 'hidePrevButton',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '이전 페이지 버튼을 숨깁니다.',
+    },
+    {
+      name: 'hideNextButton',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '다음 페이지 버튼을 숨깁니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '페이지네이션을 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'boundaryCount',
+      type: 'number',
+      defaultValue: '1',
+      description: '시작과 끝에 항상 표시되는 페이지 수입니다.',
+    },
+    {
+      name: 'siblingCount',
+      type: 'number',
+      defaultValue: '1',
+      description: '현재 페이지 양 옆에 표시되는 페이지 수입니다.',
+    },
+  ];
+
+  const tablePaginationProps: PropDefinition[] = [
+    {
+      name: 'count',
+      type: 'number',
+      description: '총 아이템 수입니다.',
+    },
+    {
+      name: 'page',
+      type: 'number',
+      description: '현재 페이지입니다. 0부터 시작합니다.',
+    },
+    {
+      name: 'onPageChange',
+      type: '(event: React.MouseEvent<HTMLButtonElement> | null, page: number) => void',
+      description: '페이지가 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'rowsPerPage',
+      type: 'number',
+      description: '페이지당 표시할 행의 수입니다.',
+    },
+    {
+      name: 'onRowsPerPageChange',
+      type: '(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void',
+      description: '페이지당 행 수가 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'component',
+      type: 'React.ElementType',
+      defaultValue: "'div'",
+      description: '루트 요소로 사용할 컴포넌트 타입입니다.',
+    },
+    {
+      name: 'rowsPerPageOptions',
+      type: 'number[]',
+      defaultValue: '[10, 25, 50, 100]',
+      description: '페이지당 행 수 선택 옵션입니다.',
+    },
+    {
+      name: 'labelRowsPerPage',
+      type: 'React.ReactNode',
+      description: '"페이지당 행 수" 라벨 텍스트입니다.',
+    },
+    {
+      name: 'labelDisplayedRows',
+      type: '({ from, to, count }: { from: number; to: number; count: number }) => string',
+      description: '표시되는 행의 범위를 나타내는 함수입니다.',
+    },
+  ];
+
   const basicCode = `
 // In your component...
 const [page, setPage] = useState(1);
@@ -157,6 +293,17 @@ const handleChangeRowsPerPage = (
         component={<InteractiveTablePagination />}
         code={tablePaginationCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={paginationProps} title="DsPagination Props" />
+          <Box sx={{ mt: 3 }}>
+            <PropsTable props={tablePaginationProps} title="TablePagination Props" />
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );

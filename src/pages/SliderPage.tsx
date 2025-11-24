@@ -2,9 +2,83 @@
 import React, { useState } from 'react';
 import { Stack, Box, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import { DsSlider } from '../components/input/DsSlider';
 
 const SliderPage = () => {
+  // DsSlider Props 정의
+  const sliderProps: PropDefinition[] = [
+    {
+      name: 'value',
+      type: 'number | number[]',
+      description: '현재 슬라이더 값입니다. 배열을 사용하면 범위 슬라이더가 됩니다. (제어 컴포넌트)',
+    },
+    {
+      name: 'defaultValue',
+      type: 'number | number[]',
+      description: '초기 슬라이더 값입니다. (비제어 컴포넌트)',
+    },
+    {
+      name: 'onChange',
+      type: '(event: Event, value: number | number[], activeThumb: number) => void',
+      description: '슬라이더 값이 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'min',
+      type: 'number',
+      defaultValue: '0',
+      description: '슬라이더의 최소값을 지정합니다.',
+    },
+    {
+      name: 'max',
+      type: 'number',
+      defaultValue: '100',
+      description: '슬라이더의 최대값을 지정합니다.',
+    },
+    {
+      name: 'step',
+      type: 'number | null',
+      defaultValue: '1',
+      description: '슬라이더의 증감 단위를 지정합니다. null로 설정하면 연속값을 허용합니다.',
+    },
+    {
+      name: 'marks',
+      type: 'boolean | Mark[]',
+      defaultValue: 'false',
+      description: 'true로 설정하면 step 위치에 마크를 표시합니다. 배열로 사용자 정의 마크를 지정할 수 있습니다.',
+    },
+    {
+      name: 'valueLabelDisplay',
+      type: "'on' | 'auto' | 'off'",
+      defaultValue: "'off'",
+      description: '값 레이블의 표시 방식을 결정합니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'Slider를 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'orientation',
+      type: "'horizontal' | 'vertical'",
+      defaultValue: "'horizontal'",
+      description: '슬라이더의 방향을 지정합니다.',
+    },
+    {
+      name: 'color',
+      type: "'primary' | 'secondary'",
+      defaultValue: "'primary'",
+      description: '슬라이더의 색상을 결정합니다.',
+    },
+    {
+      name: 'track',
+      type: "'normal' | false | 'inverted'",
+      defaultValue: "'normal'",
+      description: '트랙의 표시 방식을 지정합니다.',
+    },
+  ];
+
   const continuousCode = `
 // In your component...
 const [value, setValue] = useState<number>(30);
@@ -126,6 +200,14 @@ const [value, setValue] = useState<number[]>([20, 37]);
         }
         code={disabledCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={sliderProps} title="DsSlider Props" />
+        </Box>
       </Stack>
     </Box>
   );

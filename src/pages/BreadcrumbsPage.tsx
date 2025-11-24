@@ -6,9 +6,42 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import GrainIcon from '@mui/icons-material/Grain';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsBreadcrumbs, { BreadcrumbItem } from '../components/navigation/DsBreadcrumbs';
 
 const BreadcrumbsPage = () => {
+  // DsBreadcrumbs Props 정의
+  const breadcrumbsProps: PropDefinition[] = [
+    {
+      name: 'items',
+      type: 'BreadcrumbItem[]',
+      description: 'Breadcrumb 항목 배열입니다. { label: string, href?: string, icon?: React.ReactNode } 형태입니다.',
+    },
+    {
+      name: 'separator',
+      type: 'React.ReactNode',
+      defaultValue: "'/'",
+      description: 'Breadcrumb 항목 사이에 표시될 구분자입니다.',
+    },
+    {
+      name: 'maxItems',
+      type: 'number',
+      description: '표시할 최대 Breadcrumb 항목 수입니다. 초과 시 중간 항목들이 축약됩니다.',
+    },
+    {
+      name: 'itemsBeforeCollapse',
+      type: 'number',
+      defaultValue: '1',
+      description: '축약 시 시작 부분에 표시할 항목 수입니다.',
+    },
+    {
+      name: 'itemsAfterCollapse',
+      type: 'number',
+      defaultValue: '1',
+      description: '축약 시 끝 부분에 표시할 항목 수입니다.',
+    },
+  ];
+
   // Data for examples
   const basicItems: BreadcrumbItem[] = [
     { label: 'MUI', href: '#' },
@@ -104,6 +137,14 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
         component={<DsBreadcrumbs items={basicItems} separator={<NavigateNextIcon fontSize="small" />} />}
         code={customSeparatorCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={breadcrumbsProps} title="DsBreadcrumbs Props" />
+        </Box>
       </Stack>
     </Box>
   );

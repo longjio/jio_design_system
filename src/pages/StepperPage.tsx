@@ -2,9 +2,47 @@
 import React from 'react';
 import { Box, Stack, TextField, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsStepper, { StepItem } from '../components/navigation/DsStepper';
 
 const StepperPage = () => {
+  // DsStepper Props 정의
+  const stepperProps: PropDefinition[] = [
+    {
+      name: 'steps',
+      type: 'StepItem[]',
+      description: 'Stepper에 표시할 단계 배열입니다. { label: string, optional?: boolean } 형태입니다.',
+    },
+    {
+      name: 'stepContents',
+      type: 'React.ReactNode[]',
+      description: '각 단계에 표시될 콘텐츠 배열입니다.',
+    },
+    {
+      name: 'orientation',
+      type: "'horizontal' | 'vertical'",
+      defaultValue: "'horizontal'",
+      description: 'Stepper의 방향을 지정합니다.',
+    },
+    {
+      name: 'alternativeLabel',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'true로 설정하면 라벨이 아이콘 아래에 위치합니다. (horizontal에서만 적용)',
+    },
+    {
+      name: 'activeStep',
+      type: 'number',
+      description: '현재 활성화된 단계의 인덱스입니다. (제어 컴포넌트)',
+    },
+    {
+      name: 'defaultActiveStep',
+      type: 'number',
+      defaultValue: '0',
+      description: '초기 활성화된 단계의 인덱스입니다. (비제어 컴포넌트)',
+    },
+  ];
+
   // Stepper에 공통적으로 사용할 단계 정보
   const steps: StepItem[] = [
     { label: 'Select campaign settings' },
@@ -124,6 +162,14 @@ const stepContents: React.ReactNode[] = [
           }
           code={alternativeLabelCode}
         />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={stepperProps} title="DsStepper Props" />
+        </Box>
       </Stack>
     </Box>
   );

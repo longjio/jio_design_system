@@ -18,6 +18,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import PrintIcon from '@mui/icons-material/Print';
 import ShareIcon from '@mui/icons-material/Share';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsSpeedDial, { SpeedDialActionItem } from '../components/navigation/DsSpeedDial';
 
 // Data and components for examples
@@ -41,6 +42,75 @@ const StyledSpeedDial = styled(DsSpeedDial)(({ theme }) => ({
 }));
 
 const SpeedDialPage = () => {
+  // DsSpeedDial Props 정의
+  const speedDialProps: PropDefinition[] = [
+    {
+      name: 'ariaLabel',
+      type: 'string',
+      description: 'SpeedDial의 접근성을 위한 aria-label입니다.',
+    },
+    {
+      name: 'actions',
+      type: 'SpeedDialActionItem[]',
+      description: 'SpeedDial에서 사용할 액션 아이템 배열입니다. { icon: React.ReactNode, name: string, onClick?: () => void } 형태입니다.',
+    },
+    {
+      name: 'direction',
+      type: "'up' | 'down' | 'left' | 'right'",
+      defaultValue: "'up'",
+      description: '액션이 펼쳐질 방향을 지정합니다.',
+    },
+    {
+      name: 'hidden',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'SpeedDial을 숨깁니다.',
+    },
+    {
+      name: 'icon',
+      type: 'React.ReactNode',
+      description: 'FAB에 표시될 아이콘입니다. 지정하지 않으면 기본 아이콘이 사용됩니다.',
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: 'SpeedDial의 열림/닫힘 상태를 제어합니다. 비제어 컴포넌트로 사용하려면 생략하세요.',
+    },
+    {
+      name: 'onClose',
+      type: '(event: React.SyntheticEvent<{}>, reason: "toggle" | "blur" | "mouseLeave" | "escapeKeyDown") => void',
+      description: 'SpeedDial이 닫혀야 할 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'onOpen',
+      type: '(event: React.SyntheticEvent<{}>, reason: "toggle" | "focus" | "mouseEnter") => void',
+      description: 'SpeedDial이 열려야 할 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'FabProps',
+      type: 'Partial<FabProps>',
+      description: '내부 FAB 컴포넌트에 전달할 추가 props입니다.',
+    },
+  ];
+
+  const speedDialActionItemProps: PropDefinition[] = [
+    {
+      name: 'icon',
+      type: 'React.ReactNode',
+      description: '액션 아이템에 표시될 아이콘입니다.',
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: '액션 아이템의 이름입니다. 툴팁으로 표시됩니다.',
+    },
+    {
+      name: 'onClick',
+      type: '() => void',
+      description: '액션 아이템을 클릭할 때 호출되는 함수입니다.',
+    },
+  ];
+
   const basicCode = `
 const actions: SpeedDialActionItem[] = [
   { icon: <FileCopyIcon />, name: 'Copy' },
@@ -163,6 +233,17 @@ function PlaygroundSpeedDial() {
           component={<PlaygroundSpeedDial />}
           code={playgroundCode}
         />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={speedDialProps} title="DsSpeedDial Props" />
+          <Box sx={{ mt: 3 }}>
+            <PropsTable props={speedDialActionItemProps} title="SpeedDialActionItem Props" />
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );

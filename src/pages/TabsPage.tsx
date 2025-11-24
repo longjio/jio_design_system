@@ -2,6 +2,7 @@
 import React from 'react';
 import { Box, Stack, TextField, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsTabs, { TabItem } from '../components/navigation/DsTabs';
 
 // Icons
@@ -10,6 +11,45 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import PersonPinIcon from '@mui/icons-material/PersonPin';
 
 const TabsPage = () => {
+  // DsTabs Props 정의
+  const tabsProps: PropDefinition[] = [
+    {
+      name: 'tabs',
+      type: 'TabItem[]',
+      description: 'Tab 항목 배열입니다. { label: string, content: React.ReactNode, icon?: React.ReactElement, disabled?: boolean } 형태입니다.',
+    },
+    {
+      name: 'variant',
+      type: "'standard' | 'scrollable' | 'fullWidth'",
+      defaultValue: "'standard'",
+      description: 'Tabs의 표시 방식을 결정합니다.',
+    },
+    {
+      name: 'centered',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'Tab들을 중앙 정렬합니다.',
+    },
+    {
+      name: 'scrollButtons',
+      type: 'boolean | "auto"',
+      defaultValue: "'auto'",
+      description: 'scrollable variant일 때 스크롤 버튼 표시 여부를 결정합니다.',
+    },
+    {
+      name: 'allowScrollButtonsMobile',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '모바일에서도 스크롤 버튼을 표시할지 결정합니다.',
+    },
+    {
+      name: 'defaultValue',
+      type: 'number',
+      defaultValue: '0',
+      description: '초기 선택된 탭의 인덱스입니다.',
+    },
+  ];
+
   // Data for Basic Tabs
   const basicTabs: TabItem[] = [
     {
@@ -99,12 +139,13 @@ const scrollableTabs: TabItem[] = Array.from({ length: 7 }, (_, i) => ({
   `;
 
   return (
-    <Stack spacing={4}>
-      <Box>
-        <Typography color="text.secondary" sx={{ mb: 4 }}>
-          Tabs는 관련된 콘텐츠를 탭 형태로 구성하여 쉽게 전환할 수 있게 하는 내비게이션 컴포넌트입니다.
-        </Typography>
-      </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, p: 3 }}>
+      <Stack spacing={4}>
+        <Box>
+          <Typography color="text.secondary" sx={{ mb: 4 }}>
+            Tabs는 관련된 콘텐츠를 탭 형태로 구성하여 쉽게 전환할 수 있게 하는 내비게이션 컴포넌트입니다.
+          </Typography>
+        </Box>
       <ComponentShowcase
         title="Basic Tabs"
         description="A basic example of tabs with 4 items, one of which is disabled."
@@ -138,7 +179,16 @@ const scrollableTabs: TabItem[] = Array.from({ length: 7 }, (_, i) => ({
         }
         code={scrollableCode}
       />
-    </Stack>
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={tabsProps} title="DsTabs Props" />
+        </Box>
+      </Stack>
+    </Box>
   );
 };
 

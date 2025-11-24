@@ -4,11 +4,43 @@ import { Box, Stack, Button, List, ListItem, ListItemButton, ListItemIcon, ListI
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsDrawer from '../components/navigation/DsDrawer';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 const DrawerPage = () => {
+  // DsDrawer Props 정의
+  const drawerProps: PropDefinition[] = [
+    {
+      name: 'open',
+      type: 'boolean',
+      description: 'Drawer의 열림/닫힘 상태를 제어합니다.',
+    },
+    {
+      name: 'onClose',
+      type: '(event: React.KeyboardEvent | React.MouseEvent) => void',
+      description: 'Drawer가 닫혀야 할 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'anchor',
+      type: "'top' | 'left' | 'bottom' | 'right'",
+      defaultValue: "'left'",
+      description: 'Drawer가 나타날 화면 방향을 지정합니다.',
+    },
+    {
+      name: 'variant',
+      type: "'permanent' | 'persistent' | 'temporary'",
+      defaultValue: "'temporary'",
+      description: 'Drawer의 동작 방식을 결정합니다.',
+    },
+    {
+      name: 'children',
+      type: 'React.ReactNode',
+      description: 'Drawer 안에 표시될 콘텐츠입니다.',
+    },
+  ];
+
   const code = `
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -135,6 +167,14 @@ const toggleDrawer =
         component={<InteractiveDrawerExample />}
         code={code}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={drawerProps} title="DsDrawer Props" />
+        </Box>
       </Stack>
     </Box>
   );

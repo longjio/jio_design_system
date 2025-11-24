@@ -1,9 +1,41 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsAccordion from '../components/surface/DsAccordion';
 
 const AccordionPage = () => {
+  // DsAccordion Props 정의
+  const accordionProps: PropDefinition[] = [
+    {
+      name: 'title',
+      type: 'string',
+      description: 'Accordion의 헤더에 표시될 제목입니다.',
+    },
+    {
+      name: 'children',
+      type: 'React.ReactNode',
+      description: 'Accordion이 확장되었을 때 표시될 콘텐츠입니다.',
+    },
+    {
+      name: 'defaultExpanded',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'true로 설정하면 Accordion이 기본적으로 확장된 상태로 표시됩니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'Accordion을 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'onChange',
+      type: '(event: React.SyntheticEvent, expanded: boolean) => void',
+      description: 'Accordion의 확장/축소 상태가 변경될 때 호출되는 함수입니다.',
+    },
+  ];
+
   const simpleAccordionCode = `
 <DsAccordion title="Accordion 1">
   <Typography>
@@ -88,6 +120,14 @@ const AccordionPage = () => {
         }
         code={disabledCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={accordionProps} title="DsAccordion Props" />
+        </Box>
       </Stack>
     </Box>
   );

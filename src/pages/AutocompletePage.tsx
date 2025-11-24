@@ -3,6 +3,7 @@ import React from 'react';
 import { Box, Stack, TextField, Typography } from '@mui/material';
 import { AutocompleteRenderInputParams } from '@mui/material/Autocomplete';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import { DsAutoComplete } from '../components/input/DsAutoComplete';
 
 // Sample data
@@ -16,6 +17,82 @@ const top100Films = [
 ];
 
 export default function AutocompletePage() {
+  // DsAutoComplete Props 정의
+  const autocompleteProps: PropDefinition[] = [
+    {
+      name: 'options',
+      type: 'T[]',
+      description: '자동완성 제안에 사용될 옵션 배열입니다.',
+    },
+    {
+      name: 'renderInput',
+      type: '(params: AutocompleteRenderInputParams) => React.ReactNode',
+      description: '입력 필드를 렌더링하는 함수입니다. 일반적으로 TextField를 반환합니다.',
+    },
+    {
+      name: 'getOptionLabel',
+      type: '(option: T) => string',
+      description: '옵션 객체를 문자열로 변환하는 함수입니다.',
+    },
+    {
+      name: 'value',
+      type: 'T | T[] | null',
+      description: '현재 선택된 값입니다. (제어 컴포넌트)',
+    },
+    {
+      name: 'defaultValue',
+      type: 'T | T[] | null',
+      description: '초기 선택값입니다. (비제어 컴포넌트)',
+    },
+    {
+      name: 'onChange',
+      type: '(event: React.SyntheticEvent, value: T | T[] | null, reason: string) => void',
+      description: '선택값이 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'multiple',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'true로 설정하면 여러 옵션을 선택할 수 있습니다.',
+    },
+    {
+      name: 'freeSolo',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'true로 설정하면 옵션 목록에 없는 임의의 값을 입력할 수 있습니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'Autocomplete를 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'filterSelectedOptions',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '이미 선택된 옵션을 목록에서 제거합니다. (multiple과 함께 사용)',
+    },
+    {
+      name: 'loading',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '로딩 상태를 표시합니다.',
+    },
+    {
+      name: 'loadingText',
+      type: 'React.ReactNode',
+      defaultValue: "'Loading...'",
+      description: '로딩 중에 표시될 텍스트입니다.',
+    },
+    {
+      name: 'noOptionsText',
+      type: 'React.ReactNode',
+      defaultValue: "'No options'",
+      description: '옵션이 없을 때 표시될 텍스트입니다.',
+    },
+  ];
+
   const basicCode = `
 <DsAutoComplete
   options={top100Films}
@@ -176,6 +253,14 @@ export default function AutocompletePage() {
         }
         code={sizesCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={autocompleteProps} title="DsAutoComplete Props" />
+        </Box>
       </Stack>
     </Box>
   );

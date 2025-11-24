@@ -2,8 +2,53 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import DsProgress from '../components/feedback/DsProgress';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 
 const ProgressPage = () => {
+    // DsProgress Props 정의
+    const progressProps: PropDefinition[] = [
+        {
+            name: 'variant',
+            type: "'circular' | 'linear' | 'buffer'",
+            defaultValue: "'circular'",
+            description: 'Progress의 형태를 결정합니다.',
+        },
+        {
+            name: 'value',
+            type: 'number',
+            description: '진행률을 나타내는 값입니다. (0-100 사이)',
+        },
+        {
+            name: 'valueBuffer',
+            type: 'number',
+            description: '버퍼링 진행률을 나타내는 값입니다. (variant="buffer"일 때만 사용)',
+        },
+        {
+            name: 'color',
+            type: "'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'",
+            defaultValue: "'primary'",
+            description: 'Progress의 색상을 결정합니다.',
+        },
+        {
+            name: 'size',
+            type: 'number',
+            defaultValue: '40',
+            description: 'Circular Progress의 크기를 지정합니다. (픽셀 단위)',
+        },
+        {
+            name: 'thickness',
+            type: 'number',
+            defaultValue: '3.6',
+            description: 'Circular Progress의 선 두께를 지정합니다.',
+        },
+        {
+            name: 'withLabel',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 진행률 값이 중앙에 표시됩니다. (circular variant에서만 작동)',
+        },
+    ];
+
     const [progress, setProgress] = useState(10);
     const [bufferProgress, setBufferProgress] = useState(0);
     const [buffer, setBuffer] = useState(10);
@@ -155,6 +200,14 @@ const ProgressPage = () => {
                 }
                 code={customSizeCode}
             />
+
+                {/* API 문서 섹션 */}
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                        API
+                    </Typography>
+                    <PropsTable props={progressProps} title="DsProgress Props" />
+                </Box>
             </Stack>
         </Box>
     );

@@ -14,10 +14,45 @@ import {
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import DsMenu from '../components/navigation/DsMenu';
 import { MenuItem } from '../types/menu';
 
 const MenuPage = () => {
+  // DsMenu Props 정의
+  const menuProps: PropDefinition[] = [
+    {
+      name: 'anchorEl',
+      type: 'HTMLElement | null',
+      description: 'Menu가 부착될 DOM 요소입니다.',
+    },
+    {
+      name: 'isOpen',
+      type: 'boolean',
+      description: 'Menu의 열림/닫힘 상태를 제어합니다.',
+    },
+    {
+      name: 'onClose',
+      type: '() => void',
+      description: 'Menu가 닫혀야 할 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'items',
+      type: 'MenuItem[]',
+      description: 'Menu에 표시될 항목 배열입니다. { id: string, text: string, icon?: React.ReactNode, onClick?: () => void } 형태입니다.',
+    },
+    {
+      name: 'anchorOrigin',
+      type: '{ vertical: "top" | "center" | "bottom", horizontal: "left" | "center" | "right" }',
+      description: 'Menu가 anchorEl에 대해 어디에 위치할지 지정합니다.',
+    },
+    {
+      name: 'transformOrigin',
+      type: '{ vertical: "top" | "center" | "bottom", horizontal: "left" | "center" | "right" }',
+      description: 'Menu의 변환 원점을 지정합니다.',
+    },
+  ];
+
   const basicCode = `
 // In your component...
 const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -180,6 +215,14 @@ return (
         component={<AccountMenuExample />}
         code={accountMenuCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={menuProps} title="DsMenu Props" />
+        </Box>
       </Stack>
     </Box>
   );

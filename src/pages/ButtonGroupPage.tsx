@@ -2,10 +2,62 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import { DsButtonGroup } from '../components/button/DsButtonGroup';
 import { DsButton } from '../components/button/DsButton';
 
 const ButtonGroupPage = () => {
+  // DsButtonGroup Props 정의
+  const buttonGroupProps: PropDefinition[] = [
+    {
+      name: 'children',
+      type: 'React.ReactNode',
+      description: '그룹에 포함될 DsButton 컴포넌트들입니다.',
+    },
+    {
+      name: 'variant',
+      type: "'contained' | 'outlined' | 'text'",
+      defaultValue: "'contained'",
+      description: '버튼 그룹의 시각적 스타일을 결정합니다.',
+    },
+    {
+      name: 'color',
+      type: "'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'",
+      defaultValue: "'primary'",
+      description: '버튼 그룹의 색상을 결정합니다.',
+    },
+    {
+      name: 'size',
+      type: "'small' | 'medium' | 'large'",
+      defaultValue: "'medium'",
+      description: '버튼 그룹의 크기를 결정합니다.',
+    },
+    {
+      name: 'orientation',
+      type: "'horizontal' | 'vertical'",
+      defaultValue: "'horizontal'",
+      description: '버튼들의 배치 방향을 결정합니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '전체 버튼 그룹을 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'fullWidth',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '버튼 그룹이 부모 요소의 전체 너비를 차지하도록 합니다.',
+    },
+    {
+      name: 'disableElevation',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '그림자 효과를 제거합니다.',
+    },
+  ];
+
   const basicCode = `
 <DsButtonGroup aria-label="Basic button group">
   <DsButton>One</DsButton>
@@ -133,6 +185,14 @@ const ButtonGroupPage = () => {
         }
         code={verticalCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={buttonGroupProps} title="DsButtonGroup Props" />
+        </Box>
       </Stack>
     </Box>
   );

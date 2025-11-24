@@ -10,8 +10,62 @@ import {
 } from '@mui/material';
 import DsDialog from '../components/feedback/DsDialog';
 import ComponentShowcase from '../components/common/ComponentShowcase'; // Import ComponentShowcase
+import { PropsTable, PropDefinition } from '../components/common';
 
 const DialogPage = () => {
+    // DsDialog Props 정의
+    const dialogProps: PropDefinition[] = [
+        {
+            name: 'open',
+            type: 'boolean',
+            description: 'Dialog의 열림/닫힘 상태를 제어합니다.',
+        },
+        {
+            name: 'onClose',
+            type: '(event: {}, reason: "backdropClick" | "escapeKeyDown") => void',
+            description: 'Dialog가 닫혀야 할 때 호출되는 함수입니다.',
+        },
+        {
+            name: 'title',
+            type: 'string',
+            description: 'Dialog의 제목입니다.',
+        },
+        {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Dialog의 주요 콘텐츠입니다.',
+        },
+        {
+            name: 'actions',
+            type: 'React.ReactNode',
+            description: 'Dialog 하단에 표시할 액션 버튼들입니다.',
+        },
+        {
+            name: 'fullScreen',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 Dialog가 전체 화면으로 표시됩니다.',
+        },
+        {
+            name: 'fullWidth',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 Dialog가 최대 너비를 사용합니다.',
+        },
+        {
+            name: 'maxWidth',
+            type: "'xs' | 'sm' | 'md' | 'lg' | 'xl' | false",
+            defaultValue: "'sm'",
+            description: 'Dialog의 최대 너비를 결정합니다.',
+        },
+        {
+            name: 'disableEscapeKeyDown',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 ESC 키로 Dialog를 닫을 수 없습니다.',
+        },
+    ];
+
     // 각 다이얼로그 예제의 열림/닫힘 상태를 제어합니다.
     const [alertOpen, setAlertOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -240,6 +294,14 @@ const DialogPage = () => {
                 }
                 code={formDialogCode}
             />
+
+                {/* API 문서 섹션 */}
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                        API
+                    </Typography>
+                    <PropsTable props={dialogProps} title="DsDialog Props" />
+                </Box>
             </Stack>
         </Box>
     );

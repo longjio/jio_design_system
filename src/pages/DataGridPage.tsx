@@ -4,6 +4,7 @@ import React from 'react';
 import { Stack, Typography, Box } from '@mui/material';
 import DsDataGrid from '../components/mui_x/datagrid/DsDataGrid';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 // 사용자 정의 타입을 가져옵니다. 이 타입들이 실제 MUI X DataGrid와 호환되는지 확인이 중요합니다.
 import type { GridValueGetterParams, GridColDef } from '../types/mui-grid';
 
@@ -74,6 +75,65 @@ const rows: RowData[] = [
 ];
 
 const DataGridPage = () => {
+    // DsDataGrid Props 정의
+    const dataGridProps: PropDefinition[] = [
+        {
+            name: 'rows',
+            type: 'Array<object>',
+            description: '그리드에 표시할 데이터 배열입니다. 각 객체는 반드시 고유한 id 필드를 가져야 합니다.',
+        },
+        {
+            name: 'columns',
+            type: 'GridColDef[]',
+            description: '열 정의 배열입니다. field, headerName, width 등을 포함합니다.',
+        },
+        {
+            name: 'pageSizeOptions',
+            type: 'number[]',
+            defaultValue: '[5, 10, 25]',
+            description: '페이지당 표시할 행 수 옵션 배열입니다.',
+        },
+        {
+            name: 'initialState',
+            type: 'GridInitialState',
+            description: '그리드의 초기 상태를 설정합니다. pagination, sorting, filtering 등을 포함할 수 있습니다.',
+        },
+        {
+            name: 'autoHeight',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 그리드의 높이가 콘텐츠에 맞춰 자동으로 조절됩니다.',
+        },
+        {
+            name: 'checkboxSelection',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 각 행 앞에 체크박스가 표시됩니다.',
+        },
+        {
+            name: 'disableRowSelectionOnClick',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 행 클릭으로 선택할 수 없습니다.',
+        },
+        {
+            name: 'onRowClick',
+            type: '(params: GridRowParams) => void',
+            description: '행을 클릭했을 때 호출되는 함수입니다.',
+        },
+        {
+            name: 'loading',
+            type: 'boolean',
+            defaultValue: 'false',
+            description: 'true로 설정하면 로딩 인디케이터가 표시됩니다.',
+        },
+        {
+            name: 'density',
+            type: "'compact' | 'standard' | 'comfortable'",
+            defaultValue: "'standard'",
+            description: '그리드의 행 높이 밀도를 설정합니다.',
+        },
+    ];
 
     const basicDataGridCode = `
 <DsDataGrid
@@ -141,6 +201,14 @@ const DataGridPage = () => {
                 }
                 code={optionsDataGridCode}
             />
+
+                {/* API 문서 섹션 */}
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                        API
+                    </Typography>
+                    <PropsTable props={dataGridProps} title="DsDataGrid Props" />
+                </Box>
             </Stack>
         </Box>
     );
