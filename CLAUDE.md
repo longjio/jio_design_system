@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SSG Design System is a React + TypeScript web application built with Material-UI (MUI) components. It features both desktop and mobile layouts for a comprehensive design system documentation site. The project was bootstrapped with Create React App and uses MUI X components for advanced data visualization and interaction.
+JIO Design System is a React + TypeScript web application built with Material-UI (MUI) components. It features both desktop and mobile layouts for a comprehensive design system documentation site. The project was bootstrapped with Create React App and uses MUI X components for advanced data visualization and interaction.
 
 ## Development Commands
 

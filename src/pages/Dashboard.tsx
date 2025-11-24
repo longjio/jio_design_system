@@ -163,7 +163,7 @@ function Dashboard() {
 
     return (
         <Box sx={{ p: 3, bgcolor: 'background.default', minHeight: '100vh' }}>
-            <Stack spacing={3}>
+            <Stack spacing={3} sx={{ pb: 6 }}>
                 {/* 페이지 제목 */}
                 <Box>
                     <Typography variant="body2" color="text.secondary">

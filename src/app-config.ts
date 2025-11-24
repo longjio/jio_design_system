@@ -131,6 +131,7 @@ export const appRoutes: AppRouteConfig[] = [
 
     // Patterns 그룹
     { id: 'dashboard', path: '/dashboard', component: lazy(() => import('./pages/Dashboard')), menu: { text: 'Dashboard', group: 'patterns' } },
+    { id: 'login-showcase', path: '/login-showcase', component: lazy(() => import('./pages/LoginPage')), menu: { text: 'Login Page', group: 'patterns' } },
     { id: 'signup-showcase', path: '/signup-showcase', component: lazy(() => import('./pages/SignupPage')), menu: { text: 'Signup Page', group: 'patterns' } },
     { id: 'tabs-grid', path: '/tabs-grid', component: lazy(() => import('./template/TabsGrid')), menu: { text: '지불이관 명세서', group: 'patterns' } },
     { id: 'menu-config', path: '/menu-config', component: lazy(() => import('./template/SearchGrid')), menu: { text: '특정 지불 명세서', group: 'patterns' } },

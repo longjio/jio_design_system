@@ -18,7 +18,7 @@ const ComponentShowcasePage = () => {
             <Stack spacing={5}>
                 {/* Hero Section */}
                 <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <TitleL sx={{ mb: 2 }}>SSG Design System</TitleL>
+                    <TitleL sx={{ mb: 2 }}>JIO Design System</TitleL>
                     <Box sx={{ color: 'text.secondary', maxWidth: 800, mx: 'auto', mb: 3, textAlign: 'center' }}>
                         <BodyM>React와 Material-UI 기반의 엔터프라이즈급 디자인 시스템입니다.</BodyM>
                         <BodyM>재사용 가능한 컴포넌트, 일관된 디자인 토큰, 그리고 포괄적인 문서를 제공합니다.</BodyM>
@@ -178,7 +178,7 @@ const ComponentShowcasePage = () => {
                         Built with React 18.3.1, TypeScript 4.9.5, and Material-UI v7
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                        © 2025 SSG Design System
+                        © 2025 JIO Design System
                     </Typography>
                 </Box>
             </Stack>

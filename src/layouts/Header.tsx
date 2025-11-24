@@ -61,7 +61,7 @@ const Header = ({
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div" onClick={onTitleClick} sx={{ cursor: 'pointer' }}>
-                        SSG DESIGN SYSTEM
+                        JIO DESIGN SYSTEM
                     </Typography>
                 </Box>
                 <Box sx={{ flexGrow: 1 }} />

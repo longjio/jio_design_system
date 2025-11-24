@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { getTheme } from '../theme';
+import { getTheme, tertiaryColors, primaryColors, secondaryColors } from '../theme';
 import { Palette, PaletteColor } from '@mui/material/styles';
 import { Box, Paper, Typography, Stack, Divider, Grid as MuiGrid } from '@mui/material';
 import { grey } from '@mui/material/colors';
@@ -75,6 +75,7 @@ const PaletteSection = ({ title, paletteColor }: { title: string; paletteColor?:
                 {paletteColor.light && <ContrastColorBox color={paletteColor.light} contrastText={paletteColor.contrastText} name="light" />}
                 {paletteColor.main && <ContrastColorBox color={paletteColor.main} contrastText={paletteColor.contrastText} name="main" />}
                 {paletteColor.dark && <ContrastColorBox color={paletteColor.dark} contrastText={paletteColor.contrastText} name="dark" />}
+                {paletteColor.disabled && <ContrastColorBox color={paletteColor.disabled} contrastText={paletteColor.contrastText} name="disabled" />}
             </Stack>
         </Box>
     );
@@ -109,7 +110,10 @@ const ThemePalette = ({ mode }: { mode: 'light' | 'dark' }) => {
             <Divider sx={{ mb: 3 }} />
             <Stack spacing={4}>
                 <PaletteSection title="Primary" paletteColor={palette.primary} />
+                <KeyValueColorSection title="Primary Scale" colors={primaryColors} />
                 <PaletteSection title="Secondary" paletteColor={palette.secondary} />
+                <KeyValueColorSection title="Secondary Scale" colors={secondaryColors} />
+                <KeyValueColorSection title="Tertiary" colors={tertiaryColors} />
                 <PaletteSection title="Success" paletteColor={palette.success} />
                 <PaletteSection title="Error" paletteColor={palette.error} />
                 <PaletteSection title="Warning" paletteColor={palette.warning} />
