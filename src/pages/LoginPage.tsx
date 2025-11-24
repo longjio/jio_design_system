@@ -7,7 +7,6 @@ import {
     Typography,
     Container,
     CssBaseline,
-    Avatar,
     Checkbox,
     FormControlLabel,
     Grid as MuiGrid,
@@ -18,10 +17,10 @@ import {
     useMediaQuery,
     Divider,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useAuth } from '../contexts/AuthContext';
 import { DsButton } from '../components/button/DsButton';
 import { DsTextField } from '../components/input/DsTextField';
+import { HeadlineL } from '../components/typography';
 
 const Grid: any = MuiGrid;
 
@@ -80,17 +79,12 @@ export default function LoginPage() {
                     }}
                 >
                     {/* Header */}
-                    <Avatar
-                        sx={{
-                            width: 56,
-                            height: 56,
-                            bgcolor: 'primary.main',
-                            mb: 2,
-                        }}
-                    >
-                        <LockOutlinedIcon sx={{ fontSize: 32 }} />
-                    </Avatar>
-                    <Typography component="h1" variant="h5" fontWeight="bold" gutterBottom>
+                    <Box sx={{ whiteSpace: 'nowrap' }}>
+                        <HeadlineL>
+                            JIO DESIGN SYSTEM
+                        </HeadlineL>
+                    </Box>
+                    <Typography component="h2" variant="h6" fontWeight="medium" gutterBottom>
                         로그인
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
