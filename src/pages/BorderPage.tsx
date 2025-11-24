@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Stack, Grid as MuiGrid, useTheme } from '@mui/material';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import { TitleL, BodyM } from '../components/typography';
 
 const Grid: any = MuiGrid;
@@ -290,9 +291,12 @@ const BorderPage: React.FC = () => {
         </Paper>
 
         <Paper sx={{ p: 3, bgcolor: 'action.hover' }}>
-          <Typography variant="h6" gutterBottom>
-            💡 사용 팁
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <LightbulbOutlinedIcon sx={{ color: 'warning.main' }} />
+            <Typography variant="h6">
+              사용 팁
+            </Typography>
+          </Box>
           <Stack spacing={1}>
             <Typography variant="body2">
               • 기본 구분선: border: 1, borderColor: 'divider' 사용
