@@ -2,10 +2,55 @@
 import React, { useState } from 'react';
 import { Stack, Box, FormGroup, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import { DsSwitch } from '../components/input/DsSwitch'; // Correctly import DsSwitch
 
 // --- Main Page Component ---
 const SwitchPage = () => {
+  // DsSwitch Props 정의
+  const switchProps: PropDefinition[] = [
+    {
+      name: 'label',
+      type: 'string',
+      description: '스위치 옆에 표시될 라벨 텍스트입니다.',
+    },
+    {
+      name: 'checked',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '스위치의 on/off 상태를 결정합니다.',
+    },
+    {
+      name: 'onChange',
+      type: '(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void',
+      description: '스위치 상태가 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '스위치를 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'color',
+      type: "'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'",
+      defaultValue: "'primary'",
+      description: '스위치의 색상을 결정합니다.',
+    },
+    {
+      name: 'size',
+      type: "'small' | 'medium'",
+      defaultValue: "'medium'",
+      description: '스위치의 크기를 결정합니다.',
+    },
+    {
+      name: 'labelPlacement',
+      type: "'top' | 'start' | 'bottom' | 'end'",
+      defaultValue: "'end'",
+      description: '라벨의 위치를 결정합니다.',
+    },
+  ];
+
   const basicCode = `
 // In your component...
 const [checked, setChecked] = useState(true);
@@ -110,6 +155,14 @@ const [checked, setChecked] = useState(true);
           }
           code={disabledCode}
         />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={switchProps} title="DsSwitch Props" />
+        </Box>
       </Stack>
     </Box>
   );

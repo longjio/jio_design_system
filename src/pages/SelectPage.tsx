@@ -3,9 +3,68 @@ import React, { useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import { DsSelect, DsSelectItem } from '../components/input/DsSelect';
 
 const SelectPage = () => {
+  // DsSelect Props 정의
+  const selectProps: PropDefinition[] = [
+    {
+      name: 'label',
+      type: 'string',
+      description: 'Select 필드의 라벨입니다.',
+    },
+    {
+      name: 'items',
+      type: 'DsSelectItem[]',
+      description: '선택 가능한 아이템 목록입니다. { label: string, value: string | number, disabled?: boolean } 형태입니다.',
+    },
+    {
+      name: 'value',
+      type: 'string | number',
+      description: '현재 선택된 값입니다.',
+    },
+    {
+      name: 'onChange',
+      type: '(event: SelectChangeEvent<string | number>) => void',
+      description: '선택값이 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'variant',
+      type: "'outlined' | 'filled' | 'standard'",
+      defaultValue: "'outlined'",
+      description: 'Select의 시각적 스타일을 결정합니다.',
+    },
+    {
+      name: 'size',
+      type: "'small' | 'medium'",
+      defaultValue: "'medium'",
+      description: 'Select의 크기를 결정합니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'Select를 비활성화 상태로 만듭니다.',
+    },
+    {
+      name: 'error',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '에러 상태를 표시합니다.',
+    },
+    {
+      name: 'helperText',
+      type: 'string',
+      description: '필드 아래에 표시될 도움말 텍스트입니다.',
+    },
+    {
+      name: 'formControlSx',
+      type: 'SxProps',
+      description: 'FormControl에 적용할 스타일입니다.',
+    },
+  ];
+
   const selectItems: DsSelectItem[] = [
     { label: 'Ten', value: 10 },
     { label: 'Twenty', value: 20 },
@@ -194,6 +253,14 @@ const [age, setAge] = useState<string | number>(10);
         }
         code={sizesCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={selectProps} title="DsSelect Props" />
+        </Box>
       </Stack>
     </Box>
   );

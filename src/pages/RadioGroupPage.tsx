@@ -2,9 +2,51 @@
 import React, { useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import ComponentShowcase from '../components/common/ComponentShowcase';
+import { PropsTable, PropDefinition } from '../components/common';
 import { DsRadioGroup } from '../components/input/DsRadioGroup';
 
 const RadioGroupPage = () => {
+  // DsRadioGroup Props 정의
+  const radioGroupProps: PropDefinition[] = [
+    {
+      name: 'label',
+      type: 'string',
+      description: 'Radio Group의 라벨입니다.',
+    },
+    {
+      name: 'items',
+      type: 'Array<{ label: string, value: string, disabled?: boolean }>',
+      description: '선택 가능한 라디오 버튼 아이템 목록입니다.',
+    },
+    {
+      name: 'value',
+      type: 'string',
+      description: '현재 선택된 값입니다.',
+    },
+    {
+      name: 'onChange',
+      type: '(event: React.ChangeEvent<HTMLInputElement>, value: string) => void',
+      description: '선택값이 변경될 때 호출되는 함수입니다.',
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: 'Radio Group의 name 속성입니다. 같은 name을 가진 라디오 버튼들이 하나의 그룹을 형성합니다.',
+    },
+    {
+      name: 'row',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: 'true로 설정하면 라디오 버튼들이 가로로 배치됩니다.',
+    },
+    {
+      name: 'disabled',
+      type: 'boolean',
+      defaultValue: 'false',
+      description: '전체 Radio Group을 비활성화 상태로 만듭니다.',
+    },
+  ];
+
   const radioItems = [
     { label: 'First Option', value: 'first' },
     { label: 'Second Option', value: 'second' },
@@ -111,6 +153,14 @@ const [selectedValue, setSelectedValue] = useState('first');
         }
         code={disabledCode}
       />
+
+        {/* API 문서 섹션 */}
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ mt: 4, mb: 2 }}>
+            API
+          </Typography>
+          <PropsTable props={radioGroupProps} title="DsRadioGroup Props" />
+        </Box>
       </Stack>
     </Box>
   );
