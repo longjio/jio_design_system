@@ -68,19 +68,19 @@ const ButtonGroupPage = () => {
 
   const variantsCode = `
 // Contained (default)
-<DsButtonGroup color="primary">
+<DsButtonGroup>
   <DsButton>One</DsButton>
   <DsButton>Two</DsButton>
 </DsButtonGroup>
 
 // Outlined
-<DsButtonGroup variant="outlined" color="secondary">
+<DsButtonGroup variant="outlined">
   <DsButton>One</DsButton>
   <DsButton>Two</DsButton>
 </DsButtonGroup>
 
 // Text
-<DsButtonGroup variant="text" color="success">
+<DsButtonGroup variant="text">
   <DsButton>One</DsButton>
   <DsButton>Two</DsButton>
 </DsButtonGroup>
@@ -104,7 +104,7 @@ const ButtonGroupPage = () => {
   `;
 
   const verticalCode = `
-<DsButtonGroup orientation="vertical" color="error">
+<DsButtonGroup orientation="vertical">
   <DsButton>One</DsButton>
   <DsButton>Two</DsButton>
   <DsButton>Three</DsButton>
@@ -136,15 +136,15 @@ const ButtonGroupPage = () => {
         description="ButtonGroup supports 'contained', 'outlined', and 'text' variants."
         component={
           <Stack direction="row" spacing={2}>
-            <DsButtonGroup color="primary">
+            <DsButtonGroup>
               <DsButton>One</DsButton>
               <DsButton>Two</DsButton>
             </DsButtonGroup>
-            <DsButtonGroup variant="outlined" color="secondary">
+            <DsButtonGroup variant="outlined">
               <DsButton>One</DsButton>
               <DsButton>Two</DsButton>
             </DsButtonGroup>
-            <DsButtonGroup variant="text" color="success">
+            <DsButtonGroup variant="text">
               <DsButton>One</DsButton>
               <DsButton>Two</DsButton>
             </DsButtonGroup>
@@ -177,7 +177,7 @@ const ButtonGroupPage = () => {
         title="Vertical Group"
         description="ButtonGroup can be displayed vertically."
         component={
-          <DsButtonGroup orientation="vertical" color="error">
+          <DsButtonGroup orientation="vertical">
             <DsButton>One</DsButton>
             <DsButton>Two</DsButton>
             <DsButton>Three</DsButton>
