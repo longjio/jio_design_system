@@ -1,96 +1,99 @@
-// D:/ds_mui_new/src/contexts/AuthContext.tsx
+// src/contexts/AuthContext.tsx
 
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// --- 개선점 1: 명확한 타입 정의 ---
-// 로그인에 필요한 자격 증명 타입을 정의합니다.
-interface LoginCredentials {
-    username: string;
-    password?: string; // 비밀번호는 예시로 optional 처리
-}
-
-// 사용자 정보 타입을 정의합니다.
-interface User {
-    id: string;
-    name: string;
-}
+import { authApi } from '../api';
+import { User, LoginCredentials, SignUpCredentials } from '../types';
 
 // Context가 제공할 값들의 타입을 정의합니다.
 interface AuthContextType {
     user: User | null;
-    login: (credentials: LoginCredentials, rememberMe: boolean) => Promise<void>;
-    signup: (id: string, password: string, name: string) => Promise<void>;
-    logout: () => void;
+    login: (credentials: LoginCredentials) => Promise<{ error: string | null }>;
+    signup: (credentials: SignUpCredentials) => Promise<{ error: string | null }>;
+    logout: () => Promise<void>;
     isLoading: boolean;
+    isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const getUserFromStorage = (): User | null => {
-    try {
-        const storedUser = localStorage.getItem('user');
-        return storedUser ? JSON.parse(storedUser) : null;
-    } catch (error) {
-        console.error("Failed to parse user from localStorage", error);
-        return null;
-    }
-};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
-    // 앱 시작 시 사용자 정보를 확인하는 로직
+    // 앱 시작 시 Supabase 세션 확인
     useEffect(() => {
-        const storedUser = getUserFromStorage();
-        if (storedUser) {
-            setUser(storedUser);
-        }
-        setIsLoading(false);
-    }, []);
-
-    const login = useCallback(async (credentials: LoginCredentials, rememberMe: boolean) => {
-        // --- 개선점 2: 로그인 실패에 대비한 에러 처리 ---
-        try {
-            // TODO: 실제 API 호출 로직으로 교체
-            // const response = await api.auth.login(credentials);
-            // const userData = response.data;
-
-            // 현재는 더미 데이터를 사용합니다.
-            const userData: User = { id: '1', name: credentials.username || '사용자' };
-
-            setUser(userData);
-
-            if (rememberMe) {
-                localStorage.setItem('user', JSON.stringify(userData));
-            } else {
-                sessionStorage.setItem('user', JSON.stringify(userData));
+        const initAuth = async () => {
+            try {
+                const currentUser = await authApi.getCurrentUser();
+                setUser(currentUser);
+            } catch (error) {
+                console.error('Auth initialization error:', error);
+            } finally {
+                setIsLoading(false);
             }
+        };
+
+        initAuth();
+
+        // 인증 상태 변경 리스너
+        const { data: { subscription } } = authApi.onAuthStateChange((user) => {
+            setUser(user);
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
+    const login = useCallback(async (credentials: LoginCredentials) => {
+        try {
+            const { user: loggedInUser, error } = await authApi.login(credentials);
+
+            if (error) {
+                return { error };
+            }
+
+            setUser(loggedInUser);
             navigate('/app');
+            return { error: null };
         } catch (error) {
-            console.error("Login failed:", error);
-            // 사용자에게 로그인 실패를 알립니다.
-            alert('아이디 또는 비밀번호가 일치하지 않습니다.');
-            // 에러를 다시 던져서, 호출한 쪽(예: LoginPage)에서 추가적인 처리를 할 수 있게 합니다.
-            throw error;
+            console.error('Login failed:', error);
+            return { error: '로그인 중 오류가 발생했습니다.' };
         }
     }, [navigate]);
 
-    const signup = useCallback(async (id: string, password: string, name: string) => {
-        // TODO: 실제 회원가입 API 호출 로직 구현
-        console.log(`Signup attempt: ${id}, ${name}`);
-        return Promise.resolve();
+    const signup = useCallback(async (credentials: SignUpCredentials) => {
+        try {
+            const { user: newUser, error } = await authApi.signUp(credentials);
+
+            if (error) {
+                return { error };
+            }
+
+            // 회원가입 성공 시 (이메일 확인이 필요할 수 있음)
+            if (newUser) {
+                setUser(newUser);
+            }
+            return { error: null };
+        } catch (error) {
+            console.error('Signup failed:', error);
+            return { error: '회원가입 중 오류가 발생했습니다.' };
+        }
     }, []);
 
-    const logout = useCallback(() => {
-        setUser(null);
-        localStorage.removeItem('user');
-        sessionStorage.removeItem('user');
-        // --- 개선점 3: 로그아웃 후 이동 경로 명확화 ---
-        navigate('/');
+    const logout = useCallback(async () => {
+        try {
+            await authApi.logout();
+            setUser(null);
+            navigate('/');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     }, [navigate]);
+
+    const isAuthenticated = useMemo(() => !!user, [user]);
 
     // Context 값을 memoization하여 불필요한 리렌더링을 방지합니다.
     const value = useMemo(() => ({
@@ -99,9 +102,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signup,
         logout,
         isLoading,
-    }), [user, login, signup, logout, isLoading]);
+        isAuthenticated,
+    }), [user, login, signup, logout, isLoading, isAuthenticated]);
 
-    // 인증 상태 확인 중에는 앱의 나머지 부분을 렌더링하지 않습니다.
+    // 인증 상태 확인 중에는 로딩 표시
     if (isLoading) {
         return null; // 또는 전체 화면 로딩 스피너를 보여줄 수 있습니다.
     }

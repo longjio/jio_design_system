@@ -1,7 +1,7 @@
-// D:/ds_mui_new/src/pages/LoginPage.tsx
+// src/pages/LoginPage.tsx
 
-import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     Typography,
@@ -9,12 +9,9 @@ import {
     CssBaseline,
     Checkbox,
     FormControlLabel,
-    Grid as MuiGrid,
     Link,
     CircularProgress,
     Alert,
-    useTheme,
-    useMediaQuery,
     Divider,
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,38 +19,27 @@ import { DsButton } from '../components/button/DsButton';
 import { DsTextField } from '../components/input/DsTextField';
 import { HeadlineL } from '../components/typography';
 
-const Grid: any = MuiGrid;
-
 export default function LoginPage() {
-    const navigate = useNavigate();
-    const { login, user } = useAuth();
+    const { login } = useAuth();
 
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // 로그인 페이지 쇼케이스를 위해 자동 리다이렉트를 제거
-    // useEffect(() => {
-    //     if (user) {
-    //         navigate(isMobile ? '/m' : '/app', { replace: true });
-    //     }
-    // }, [user, isMobile, navigate]);
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setError(null);
         setIsLoading(true);
-        try {
-            await login({ username, password }, rememberMe);
-            navigate(isMobile ? '/m' : '/app');
-        } catch (err: any) {
-            setError(err.message || '로그인에 실패했습니다.');
-        } finally {
+
+        const { error: loginError } = await login({ email, password });
+
+        if (loginError) {
+            setError(loginError);
+            setIsLoading(false);
+        } else {
+            // 로그인 성공 시 AuthContext에서 navigate 처리됨
             setIsLoading(false);
         }
     };
@@ -103,13 +89,14 @@ export default function LoginPage() {
                             margin="normal"
                             required
                             fullWidth
-                            id="username"
-                            label="사용자 이름"
-                            name="username"
-                            autoComplete="username"
+                            id="email"
+                            label="이메일"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
                             autoFocus
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             disabled={isLoading}
                         />
                         <DsTextField
