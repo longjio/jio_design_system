@@ -140,4 +140,5 @@ export const appRoutes: AppRouteConfig[] = [
     { id: 'user-menu-auth', path: '/user-menu-auth', component: lazy(() => import('./template/UserMenu')), menu: { text: '사용자별 메뉴 관리', group: 'patterns' } },
     { id: 'auth-group-management', path: '/auth-group-management', component: lazy(() => import('./template/AuthGroup')), menu: { text: '권한 그룹 관리', group: 'patterns' } },
     { id: 'auth-group-user', path: '/auth-group-user', component: lazy(() => import('./template/AuthGroupUser')), menu: { text: '권한그룹별 사용자 관리', group: 'patterns' } },
+    { id: 'menu-permission', path: '/menu-permission', component: lazy(() => import('./template/MenuPermission')), menu: { text: '메뉴 권한 관리', group: 'patterns' } },
 ];

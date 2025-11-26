@@ -18,10 +18,18 @@ export const login = async ({ email, password }: LoginCredentials): Promise<Auth
             return { user: null, error: error.message };
         }
 
+        // profiles 테이블에서 role 가져오기
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, name')
+            .eq('id', data.user?.id)
+            .single();
+
         const user: User = {
             id: data.user?.id || '',
             email: data.user?.email || '',
-            name: data.user?.user_metadata?.name,
+            name: profile?.name || data.user?.user_metadata?.name,
+            role: profile?.role || 'user',
             createdAt: data.user?.created_at,
         };
 
@@ -87,10 +95,18 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
         if (!user) return null;
 
+        // profiles 테이블에서 role 가져오기
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, name')
+            .eq('id', user.id)
+            .single();
+
         return {
             id: user.id,
             email: user.email || '',
-            name: user.user_metadata?.name,
+            name: profile?.name || user.user_metadata?.name,
+            role: profile?.role || 'user',
             createdAt: user.created_at,
         };
     } catch (err) {

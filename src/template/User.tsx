@@ -1,8 +1,8 @@
-// D:/ds_mui_new/src/template/User.tsx
+// src/template/User.tsx
 
-import React, { useState } from 'react';
-import { Box, Select, MenuItem, TextField, SelectChangeEvent } from '@mui/material';
-import { GridColDef } from '@mui/x-data-grid';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Box, Select, MenuItem, TextField, SelectChangeEvent, CircularProgress, Alert } from '@mui/material';
+import { GridColDef, GridRowParams } from '@mui/x-data-grid';
 
 // 레이아웃 및 공통 컴포넌트 import
 import { TitleArea, SearchArea, SubTitleArea } from '../layouts';
@@ -13,106 +13,169 @@ import {
     SearchIconButton,
     ResetButton,
     PrintButton,
-    AddButton,
-    DeleteButton,
     SaveButton,
 } from '../components/button';
 
-// --- 샘플 데이터 정의 ---
+// API 및 타입 import
+import { profileApi } from '../api';
+import { Profile } from '../types';
 
-// 1. 좌측 사용자 그리드 데이터
-const userGridRows = [
-    { id: 'user001', loginId: 'user001', name: '홍길동', system: 'DS MUI NEW', company: '본사', useTempPassword: 'N', isUsed: 'Y', description: '프론트엔드 개발자', createdBy: 'admin', updatedBy: 'admin', createdAt: '2023-10-27 10:00', updatedAt: '2023-10-27 11:00' },
-    { id: 'user002', loginId: 'user002', name: '이순신', system: 'DS MUI NEW', company: '자회사 A', useTempPassword: 'N', isUsed: 'Y', description: '백엔드 개발자', createdBy: 'admin', updatedBy: 'admin', createdAt: '2023-10-26 14:00', updatedAt: '2023-10-26 15:30' },
-    { id: 'user003', loginId: 'user003', name: '유관순', system: '레거시 시스템', company: '자회사 B', useTempPassword: 'Y', isUsed: 'N', description: 'UI/UX 디자이너', createdBy: 'admin', updatedBy: 'admin', createdAt: '2023-10-25 09:00', updatedAt: '2023-10-25 09:00' },
-    { id: 'user004', loginId: 'user004', name: '세종대왕', system: 'DS MUI NEW', company: '본사', useTempPassword: 'N', isUsed: 'Y', description: '프로젝트 매니저', createdBy: 'admin', updatedBy: 'admin', createdAt: '2023-10-24 11:00', updatedAt: '2023-10-24 18:00' },
-];
-
-// 1. 좌측 사용자 그리드 컬럼 정의
+// 그리드 컬럼 정의
 const userGridColumns: GridColDef[] = [
-    { field: 'loginId', headerName: '로그인ID', width: 120 },
-    { field: 'name', headerName: '사용자명', width: 120 },
-    { field: 'system', headerName: '시스템', width: 150 },
-    { field: 'company', headerName: '회사', width: 150 },
-    { field: 'useTempPassword', headerName: '임시비밀번호', width: 100, align: 'center' },
-    { field: 'isUsed', headerName: '사용유무', width: 80, align: 'center' },
+    { field: 'email', headerName: '이메일', width: 200 },
+    { field: 'name', headerName: '사용자명', width: 100, align: 'center' },
+    { field: 'department', headerName: '부서', width: 120 },
+    { field: 'company', headerName: '회사', width: 120 },
+    { field: 'role', headerName: '역할', width: 80, align: 'center' },
+    {
+        field: 'is_active',
+        headerName: '상태',
+        width: 80,
+        align: 'center',
+        valueGetter: (value: boolean) => value ? '활성' : '비활성'
+    },
     { field: 'description', headerName: '설명', flex: 1, minWidth: 150 },
-    { field: 'createdBy', headerName: '등록자', width: 100 },
-    { field: 'updatedBy', headerName: '수정자', width: 100 },
-    { field: 'createdAt', headerName: '등록일시', width: 150 },
-    { field: 'updatedAt', headerName: '수정일시', width: 150 },
+    {
+        field: 'created_at',
+        headerName: '등록일시',
+        width: 150,
+        valueGetter: (value: string) => value ? new Date(value).toLocaleString('ko-KR') : ''
+    },
+    {
+        field: 'updated_at',
+        headerName: '수정일시',
+        width: 150,
+        valueGetter: (value: string) => value ? new Date(value).toLocaleString('ko-KR') : ''
+    },
 ];
 
-// 2. Select 컴포넌트를 위한 옵션 데이터
-// 조회 영역 Select를 위한 옵션 데이터
-const systemOptionsForSearch = [
+// Select 옵션 데이터
+const roleOptions = [
     { value: 'all', label: '전체' },
-    { value: 'ds_mui_new', label: 'DS MUI NEW' },
-    { value: 'legacy_system', label: '레거시 시스템' },
+    { value: 'admin', label: '관리자' },
+    { value: 'user', label: '사용자' },
 ];
 
-const companyOptionsForSearch = [
+const statusOptions = [
     { value: 'all', label: '전체' },
-    { value: 'com01', label: '본사' },
-    { value: 'com02', label: '자회사 A' },
-    { value: 'com03', label: '자회사 B' },
+    { value: 'active', label: '활성' },
+    { value: 'inactive', label: '비활성' },
 ];
 
-// 상세 정보 폼을 위한 추가 옵션 데이터
-const systemOptionsForForm = [
-    { value: 'ds_mui_new', label: 'DS MUI NEW' },
-    { value: 'legacy_system', label: '레거시 시스템' },
+const roleOptionsForForm = [
+    { value: 'admin', label: '관리자' },
+    { value: 'user', label: '사용자' },
 ];
 
-const companyOptionsForForm = [
-    { value: 'com01', label: '본사' },
-    { value: 'com02', label: '자회사 A' },
-    { value: 'com03', label: '자회사 B' },
-];
-
-const departmentOptions = [
-    { value: 'dept01', label: '인사팀' },
-    { value: 'dept02', label: '개발팀' },
-    { value: 'dept03', label: '디자인팀' },
-];
-
-// 상세 폼의 '사용여부' Select를 위한 옵션
-const usageStatusOptionsForForm = [
-    { value: 'Y', label: '사용' },
-    { value: 'N', label: '미사용' },
+const statusOptionsForForm = [
+    { value: 'true', label: '활성' },
+    { value: 'false', label: '비활성' },
 ];
 
 export default function UserPage() {
-    // ★ 조회 조건 State 수정
-    const [searchSystem, setSearchSystem] = useState('all');
-    const [searchCompany, setSearchCompany] = useState('all');
-    const [loginId, setLoginId] = useState('');
-    const [userName, setUserName] = useState('');
+    // 데이터 State
+    const [profiles, setProfiles] = useState<Profile[]>([]);
+    const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>([]);
+    const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    // 오른쪽 상세 정보 폼 State
+    // 조회 조건 State
+    const [searchRole, setSearchRole] = useState('all');
+    const [searchStatus, setSearchStatus] = useState('all');
+    const [searchEmail, setSearchEmail] = useState('');
+    const [searchName, setSearchName] = useState('');
+
+    // 상세 정보 폼 State
     const [formState, setFormState] = useState({
-        system: 'ds_mui_new',
-        loginId: '',
-        userName: '',
-        password: '',
-        company: 'com01',
-        department: 'dept02',
-        useTempPassword: 'N',
-        isUsed: 'Y',
+        id: '',
+        email: '',
+        name: '',
+        department: '',
+        company: '',
+        role: 'user',
+        is_active: 'true',
         description: '',
     });
 
-    // ★ handleSearch 수정
+    // 프로필 목록 조회
+    const fetchProfiles = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+
+        const { profiles: data, error: fetchError } = await profileApi.getProfiles();
+
+        if (fetchError) {
+            setError(fetchError);
+        } else {
+            setProfiles(data);
+            setFilteredProfiles(data);
+        }
+
+        setIsLoading(false);
+    }, []);
+
+    // 초기 데이터 로드
+    useEffect(() => {
+        fetchProfiles();
+    }, [fetchProfiles]);
+
+    // 검색 필터링
     const handleSearch = () => {
-        alert(`검색 조건:\n시스템: ${searchSystem}\n회사: ${searchCompany}\n로그인ID: ${loginId}\n사용자명: ${userName}`);
+        let filtered = [...profiles];
+
+        // 역할 필터
+        if (searchRole !== 'all') {
+            filtered = filtered.filter(p => p.role === searchRole);
+        }
+
+        // 상태 필터
+        if (searchStatus !== 'all') {
+            const isActive = searchStatus === 'active';
+            filtered = filtered.filter(p => p.is_active === isActive);
+        }
+
+        // 이메일 필터
+        if (searchEmail) {
+            filtered = filtered.filter(p =>
+                p.email?.toLowerCase().includes(searchEmail.toLowerCase())
+            );
+        }
+
+        // 이름 필터
+        if (searchName) {
+            filtered = filtered.filter(p =>
+                p.name?.toLowerCase().includes(searchName.toLowerCase())
+            );
+        }
+
+        setFilteredProfiles(filtered);
     };
 
-    // ★ handleReset 수정
+    // 검색 조건 초기화
     const handleReset = () => {
-        setSearchSystem('all');
-        setSearchCompany('all');
-        setLoginId('');
-        setUserName('');
+        setSearchRole('all');
+        setSearchStatus('all');
+        setSearchEmail('');
+        setSearchName('');
+        setFilteredProfiles(profiles);
+    };
+
+    // 그리드 행 클릭 시 상세 폼에 데이터 표시
+    const handleRowClick = (params: GridRowParams<Profile>) => {
+        const profile = params.row;
+        setSelectedProfile(profile);
+        setFormState({
+            id: profile.id,
+            email: profile.email || '',
+            name: profile.name || '',
+            department: profile.department || '',
+            company: profile.company || '',
+            role: profile.role || 'user',
+            is_active: profile.is_active ? 'true' : 'false',
+            description: profile.description || '',
+        });
     };
 
     // 상세 폼 입력 변경 핸들러
@@ -127,6 +190,42 @@ export default function UserPage() {
         setFormState(prev => ({ ...prev, [name]: value }));
     };
 
+    // 프로필 저장
+    const handleSave = async () => {
+        if (!selectedProfile) {
+            setError('수정할 사용자를 선택해주세요.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        setSuccessMessage(null);
+
+        const { profile, error: updateError } = await profileApi.updateProfile(
+            formState.id,
+            {
+                name: formState.name,
+                department: formState.department,
+                company: formState.company,
+                role: formState.role,
+                is_active: formState.is_active === 'true',
+                description: formState.description,
+            }
+        );
+
+        if (updateError) {
+            setError(updateError);
+        } else if (profile) {
+            setSuccessMessage('저장되었습니다.');
+            // 목록 갱신
+            await fetchProfiles();
+            // 3초 후 성공 메시지 제거
+            setTimeout(() => setSuccessMessage(null), 3000);
+        }
+
+        setIsLoading(false);
+    };
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, p: 3 }}>
             {/* --- 상단 제목 및 조회 영역 --- */}
@@ -135,27 +234,59 @@ export default function UserPage() {
                 <ResetButton onClick={handleReset} />
             </TitleArea>
 
-            {/* ★ SearchArea 수정 */}
+            {/* 에러/성공 메시지 */}
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+                    {error}
+                </Alert>
+            )}
+            {successMessage && (
+                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccessMessage(null)}>
+                    {successMessage}
+                </Alert>
+            )}
+
+            {/* 조회 영역 */}
             <SearchArea>
-                <FormField label="시스템" htmlFor="system-search">
-                    <Select id="system-search" value={searchSystem} onChange={(e) => setSearchSystem(e.target.value)} sx={{ width: '180px' }}>
-                        {systemOptionsForSearch.map((option) => (
+                <FormField label="역할" htmlFor="role-search">
+                    <Select
+                        id="role-search"
+                        value={searchRole}
+                        onChange={(e) => setSearchRole(e.target.value)}
+                        sx={{ width: '150px' }}
+                    >
+                        {roleOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                         ))}
                     </Select>
                 </FormField>
-                <FormField label="회사" htmlFor="company-search">
-                    <Select id="company-search" value={searchCompany} onChange={(e) => setSearchCompany(e.target.value)} sx={{ width: '180px' }}>
-                        {companyOptionsForSearch.map((option) => (
+                <FormField label="상태" htmlFor="status-search">
+                    <Select
+                        id="status-search"
+                        value={searchStatus}
+                        onChange={(e) => setSearchStatus(e.target.value)}
+                        sx={{ width: '150px' }}
+                    >
+                        {statusOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                         ))}
                     </Select>
                 </FormField>
-                <FormField label="로그인ID" htmlFor="login-id-search">
-                    <TextField id="login-id-search" value={loginId} onChange={(e) => setLoginId(e.target.value)} sx={{ width: '200px' }} />
+                <FormField label="이메일" htmlFor="email-search">
+                    <TextField
+                        id="email-search"
+                        value={searchEmail}
+                        onChange={(e) => setSearchEmail(e.target.value)}
+                        sx={{ width: '200px' }}
+                    />
                 </FormField>
                 <FormField label="사용자명" htmlFor="user-name-search">
-                    <TextField id="user-name-search" value={userName} onChange={(e) => setUserName(e.target.value)} sx={{ width: '200px' }} />
+                    <TextField
+                        id="user-name-search"
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                        sx={{ width: '200px' }}
+                    />
                 </FormField>
                 <SearchIconButton onClick={handleSearch} />
             </SearchArea>
@@ -165,73 +296,97 @@ export default function UserPage() {
 
                 {/* --- 왼쪽 영역 (7.5) - 사용자 그리드 --- */}
                 <Box sx={{ flex: 7.5, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                    <SubTitleArea title="사용자 목록">
-                        <AddButton onClick={() => {}} />
-                        <DeleteButton onClick={() => {}} />
-                        <SaveButton onClick={() => {}} />
+                    <SubTitleArea title={`사용자 목록 (${filteredProfiles.length}명)`}>
+                        {isLoading && <CircularProgress size={20} />}
                     </SubTitleArea>
                     <DsDataGrid
-                        rows={userGridRows}
+                        rows={filteredProfiles}
                         columns={userGridColumns}
                         sx={{ flexGrow: 1 }}
                         showRowNumber
-                        checkboxSelection
                         hideFooter
+                        onRowClick={handleRowClick}
+                        loading={isLoading}
+                        paginationModel={{ page: 0, pageSize: 100 }}
                     />
                 </Box>
 
                 {/* --- 오른쪽 영역 (2.5) - 상세 정보 입력 폼 --- */}
                 <Box sx={{ flex: 2.5, display: 'flex', flexDirection: 'column' }}>
                     <SubTitleArea title="사용자 상세 정보">
-                        <SaveButton onClick={() => {}} />
+                        <SaveButton onClick={handleSave} disabled={!selectedProfile || isLoading} />
                     </SubTitleArea>
                     <Box sx={{ border: '1px solid', borderColor: 'divider', flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-                        <FormTableRow label="시스템" required>
-                            <Select fullWidth name="system" value={formState.system} onChange={handleSelectChange}>
-                                {systemOptionsForForm.map((option) => (
+                        <FormTableRow label="이메일">
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                name="email"
+                                value={formState.email}
+                                disabled
+                            />
+                        </FormTableRow>
+                        <FormTableRow label="사용자명">
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                name="name"
+                                value={formState.name}
+                                onChange={handleFormChange}
+                            />
+                        </FormTableRow>
+                        <FormTableRow label="부서">
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                name="department"
+                                value={formState.department}
+                                onChange={handleFormChange}
+                            />
+                        </FormTableRow>
+                        <FormTableRow label="회사">
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                name="company"
+                                value={formState.company}
+                                onChange={handleFormChange}
+                            />
+                        </FormTableRow>
+                        <FormTableRow label="역할">
+                            <Select
+                                fullWidth
+                                name="role"
+                                value={formState.role}
+                                onChange={handleSelectChange}
+                            >
+                                {roleOptionsForForm.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormTableRow>
-                        <FormTableRow label="로그인ID" required>
-                            <TextField fullWidth variant="outlined" name="loginId" value={formState.loginId} onChange={handleFormChange} />
-                        </FormTableRow>
-                        <FormTableRow label="사용자명" required>
-                            <TextField fullWidth variant="outlined" name="userName" value={formState.userName} onChange={handleFormChange} />
-                        </FormTableRow>
-                        <FormTableRow label="비밀번호">
-                            <TextField fullWidth variant="outlined" type="password" name="password" value={formState.password} onChange={handleFormChange} />
-                        </FormTableRow>
-                        <FormTableRow label="회사" required>
-                            <Select fullWidth name="company" value={formState.company} onChange={handleSelectChange}>
-                                {companyOptionsForForm.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormTableRow>
-                        <FormTableRow label="부서" required>
-                            <Select fullWidth name="department" value={formState.department} onChange={handleSelectChange}>
-                                {departmentOptions.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormTableRow>
-                        <FormTableRow label="임시비밀번호 사용여부">
-                            <Select fullWidth name="useTempPassword" value={formState.useTempPassword} onChange={handleSelectChange}>
-                                {usageStatusOptionsForForm.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormTableRow>
-                        <FormTableRow label="사용여부">
-                            <Select fullWidth name="isUsed" value={formState.isUsed} onChange={handleSelectChange}>
-                                {usageStatusOptionsForForm.map((option) => (
+                        <FormTableRow label="상태">
+                            <Select
+                                fullWidth
+                                name="is_active"
+                                value={formState.is_active}
+                                onChange={handleSelectChange}
+                            >
+                                {statusOptionsForForm.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormTableRow>
                         <FormTableRow label="설명">
-                            <TextField fullWidth multiline rows={2} variant="outlined" name="description" value={formState.description} onChange={handleFormChange} />
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={2}
+                                variant="outlined"
+                                name="description"
+                                value={formState.description}
+                                onChange={handleFormChange}
+                            />
                         </FormTableRow>
                     </Box>
                 </Box>

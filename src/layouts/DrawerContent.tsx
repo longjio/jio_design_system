@@ -15,6 +15,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess'; // 아이콘 추가
 import ExpandMore from '@mui/icons-material/ExpandMore'; // 아이콘 추가
 import { MenuItem } from '../types/menu';
 import { BodyM, BodyS } from '../components/typography';
+import { usePermission } from '../contexts/PermissionContext';
 
 interface DrawerContentProps {
     onMenuClick: (item: MenuItem) => void;
@@ -68,6 +69,33 @@ const RecursiveListItem = ({ item, onMenuClick, depth }: { item: MenuItem, onMen
 
 export default function DrawerContent({ onMenuClick, menuData }: DrawerContentProps) {
     const [searchTerm, setSearchTerm] = useState('');
+    const { canAccess } = usePermission();
+
+    // --- 권한 기반 메뉴 필터링 ---
+    const filterByPermission = (items: MenuItem[]): MenuItem[] => {
+        return items.reduce<MenuItem[]>((acc, item) => {
+            // 권한이 없으면 제외
+            if (!canAccess(item.id)) {
+                return acc;
+            }
+
+            // 자식이 있으면 자식도 권한 체크
+            if (item.children) {
+                const filteredChildren = filterByPermission(item.children);
+                // 자식이 모두 제외되면 부모도 제외
+                if (filteredChildren.length > 0) {
+                    acc.push({ ...item, children: filteredChildren });
+                } else if (item.path && item.path !== '#') {
+                    // 자식이 없어도 본인이 라우팅 가능하면 포함
+                    acc.push({ ...item, children: undefined });
+                }
+            } else {
+                acc.push(item);
+            }
+
+            return acc;
+        }, []);
+    };
 
     // --- 계층 구조를 지원하는 새로운 검색 로직 ---
     const filterTree = (items: MenuItem[], term: string): MenuItem[] => {
@@ -90,14 +118,16 @@ export default function DrawerContent({ onMenuClick, menuData }: DrawerContentPr
             if (hasTextMatch) {
                 acc.push({ ...item, children: undefined });
             }
-            
+
             return acc;
         }, []);
     };
 
     const filteredMenuItems = useMemo(() => {
-        return filterTree(menuData, searchTerm);
-    }, [menuData, searchTerm]);
+        // 먼저 권한으로 필터링, 그 다음 검색어로 필터링
+        const permissionFiltered = filterByPermission(menuData);
+        return filterTree(permissionFiltered, searchTerm);
+    }, [menuData, searchTerm, canAccess]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>

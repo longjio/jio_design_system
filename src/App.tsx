@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
 import { ThemeModeProvider } from './contexts/ThemeModeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { PermissionProvider } from './contexts/PermissionContext';
 import LoginPage from './pages/LoginPage';
 import MainLayout from './layouts/MainLayout';
 import NotFoundPage from './pages/NotFoundPage';
@@ -31,7 +32,8 @@ function App() {
         <ThemeModeProvider>
             <BrowserRouter basename={process.env.PUBLIC_URL}>
                 <AuthProvider>
-                    <Suspense fallback={<LoadingFallback />}>
+                    <PermissionProvider>
+                        <Suspense fallback={<LoadingFallback />}>
                         <Routes>
                             {/* 공통 페이지 */}
                             <Route path="/" element={<LoginPage />} />
@@ -73,7 +75,8 @@ function App() {
                             {/* 404 페이지 */}
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
-                    </Suspense>
+                        </Suspense>
+                    </PermissionProvider>
                 </AuthProvider>
             </BrowserRouter>
         </ThemeModeProvider>

@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Box, Select, MenuItem, TextField } from '@mui/material';
-import { GridColDef } from '@mui/x-data-grid';
+// src/template/MenuObj.tsx
+// 메뉴 OBJ 관리 페이지
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { Box, Select, MenuItem, TextField, SelectChangeEvent, CircularProgress, Alert } from '@mui/material';
+import { GridColDef, GridRowParams } from '@mui/x-data-grid';
 
 // 레이아웃 및 공통 컴포넌트 import
 import { TitleArea, SearchArea, SubTitleArea } from '../layouts';
@@ -10,72 +13,16 @@ import DsDataGrid from '../components/mui_x/datagrid/DsDataGrid';
 import {
     SearchIconButton,
     ResetButton,
-    PrintButton,
     AddButton,
     DeleteButton,
     SaveButton,
 } from '../components/button';
 
-// --- 샘플 데이터 정의 ---
+// API 및 타입 import
+import { menuApi } from '../api';
+import { Menu, MenuObject, MenuObjectInput } from '../types';
 
-// 1. 왼쪽 메뉴 그리드 데이터
-const menuGridRows = [
-    { id: 1, menuName: '대시보드', order: 1, depth: 0, parentId: null },
-    { id: 2, menuName: '컴포넌트', order: 2, depth: 0, parentId: null },
-    { id: 3, menuName: '버튼', order: 1, depth: 1, parentId: 2 },
-    { id: 4, menuName: '데이터 그리드', order: 2, depth: 1, parentId: 2 },
-    { id: 5, menuName: '관리', order: 3, depth: 0, parentId: null },
-    { id: 6, menuName: '사용자 관리', order: 1, depth: 1, parentId: 5 },
-];
-
-const menuGridColumns: GridColDef[] = [
-    { field: 'depth', headerName: 'LEVEL', width: 80, align: 'center' },
-    { field: 'id', headerName: '메뉴ID', width: 90, align: 'center' },
-    { field: 'menuName', headerName: '메뉴명', flex: 1, minWidth: 150 },
-    { field: 'parentId', headerName: '상위메뉴', width: 90, align: 'center' },
-    { field: 'order', headerName: '정렬', type: 'number', width: 80, align: 'center' },
-];
-
-// 2. 중앙 상단 객체 그리드 데이터
-const objectGridRows = [
-    { id: 'OBJ001', name: 'User', actionUrl: '/api/users', logYn: 'Y' },
-    { id: 'OBJ002', name: 'Product', actionUrl: '/api/products', logYn: 'Y' },
-    { id: 'OBJ003', name: 'Order', actionUrl: '/api/orders', logYn: 'N' },
-];
-const objectGridColumns: GridColDef[] = [
-    { field: 'id', headerName: '오브젝트ID', width: 100 },
-    { field: 'name', headerName: '오브젝트명', flex: 1, minWidth: 120 },
-    { field: 'actionUrl', headerName: '액션 URL', flex: 1.5, minWidth: 180 },
-    { field: 'logYn', headerName: '로그', width: 80, align: 'center' },
-];
-
-// 3. 중앙 하단 속성 그리드 데이터
-const propertyGridRows = [
-    { id: 'SUB_OBJ01', name: 'UserDetails', actionUrl: '/api/users/details', logYn: 'N' },
-    { id: 'SUB_OBJ02', name: 'ProductStock', actionUrl: '/api/products/stock', logYn: 'Y' },
-    { id: 'SUB_OBJ03', name: 'OrderHistory', actionUrl: '/api/orders/history', logYn: 'Y' },
-];
-const propertyGridColumns: GridColDef[] = [
-    { field: 'id', headerName: '오브젝트ID', width: 100 },
-    { field: 'name', headerName: '오브젝트명', flex: 1, minWidth: 120 },
-    { field: 'actionUrl', headerName: '액션 URL', flex: 1.5, minWidth: 180 },
-    { field: 'logYn', headerName: '로그', width: 80, align: 'center' },
-];
-
-// 시스템 선택 옵션
-const systemOptions = [
-    { value: 'all', label: '전체' },
-    { value: 'ds_mui_new', label: 'DS MUI NEW' },
-    { value: 'legacy_system', label: '레거시 시스템' },
-];
-
-// 오른쪽 폼의 Select들을 위한 옵션 데이터
-const objectSelectOptions = [
-    { value: 'OBJ001', label: 'User' },
-    { value: 'OBJ002', label: 'Product' },
-    { value: 'OBJ003', label: 'Order' },
-];
-
+// 동작구분 옵션
 const actionTypeOptions = [
     { value: 'C', label: '생성(Create)' },
     { value: 'R', label: '조회(Read)' },
@@ -83,56 +30,442 @@ const actionTypeOptions = [
     { value: 'D', label: '삭제(Delete)' },
 ];
 
+// 로그 사용 옵션
 const logOptions = [
-    { value: 'Y', label: '사용' },
-    { value: 'N', label: '미사용' },
+    { value: 'true', label: '사용' },
+    { value: 'false', label: '미사용' },
 ];
 
+// 메뉴 그리드 컬럼
+const menuGridColumns: GridColDef[] = [
+    { field: 'depth', headerName: 'LEVEL', width: 80, align: 'center' },
+    { field: 'id', headerName: '메뉴ID', width: 120 },
+    {
+        field: 'menu_name',
+        headerName: '메뉴명',
+        flex: 1,
+        minWidth: 150,
+        valueGetter: (value: string, row: Menu) => {
+            // depth에 따라 들여쓰기
+            return '　'.repeat(row.depth) + value;
+        }
+    },
+    { field: 'parent_id', headerName: '상위메뉴', width: 100 },
+    { field: 'sort_order', headerName: '정렬', type: 'number', width: 80, align: 'center' },
+];
+
+// 오브젝트 그리드 컬럼
+const objectGridColumns: GridColDef[] = [
+    { field: 'id', headerName: '오브젝트ID', width: 120 },
+    { field: 'object_name', headerName: '오브젝트명', flex: 1, minWidth: 120 },
+    { field: 'action_url', headerName: '액션 URL', flex: 1.5, minWidth: 180 },
+    {
+        field: 'action_type',
+        headerName: '동작',
+        width: 80,
+        align: 'center',
+        valueGetter: (value: string) => {
+            const types: Record<string, string> = { C: '생성', R: '조회', U: '수정', D: '삭제' };
+            return types[value] || value;
+        }
+    },
+    {
+        field: 'log_yn',
+        headerName: '로그',
+        width: 80,
+        align: 'center',
+        valueGetter: (value: boolean) => value ? 'Y' : 'N'
+    },
+];
+
+// 초기 폼 상태
+const initialObjectForm = {
+    id: '',
+    object_name: '',
+    action_url: '',
+    action_type: 'R' as 'C' | 'R' | 'U' | 'D',
+    sort_order: 1,
+    log_yn: 'true',
+};
+
 export default function MenuObjPage() {
+    // 데이터 State
+    const [menus, setMenus] = useState<Menu[]>([]);
+    const [filteredMenus, setFilteredMenus] = useState<Menu[]>([]);
+    const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
+    const [basicObjects, setBasicObjects] = useState<MenuObject[]>([]);
+    const [additionalObjects, setAdditionalObjects] = useState<MenuObject[]>([]);
+    const [selectedBasicObject, setSelectedBasicObject] = useState<MenuObject | null>(null);
+    const [selectedAdditionalObject, setSelectedAdditionalObject] = useState<MenuObject | null>(null);
+
+    // 로딩/에러 State
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
     // 조회 조건 State
-    const [system, setSystem] = useState('all');
-    const [menuId, setMenuId] = useState('');
-    const [menuName, setMenuName] = useState('');
+    const [searchMenuName, setSearchMenuName] = useState('');
 
-    // 오른쪽 상단 "기본 OBJ" 폼 State
-    const [selectedObject, setSelectedObject] = useState('');
-    const [objectName, setObjectName] = useState('');
-    const [actionUrl, setActionUrl] = useState('');
-    const [sortOrder, setSortOrder] = useState('');
-    const [actionType, setActionType] = useState('');
-    const [logYn, setLogYn] = useState('');
+    // 기본 OBJ 폼 State
+    const [basicForm, setBasicForm] = useState(initialObjectForm);
+    const [basicFormDirty, setBasicFormDirty] = useState(false);
 
-    // 오른쪽 하단 "추가 OBJ" 폼 State
-    const [propertyId, setPropertyId] = useState('');
-    const [propertyName, setPropertyName] = useState('');
-    const [propertyType, setPropertyType] = useState('');
-    const [propertyDefault, setPropertyDefault] = useState('');
+    // 추가 OBJ 폼 State
+    const [additionalForm, setAdditionalForm] = useState(initialObjectForm);
+    const [additionalFormDirty, setAdditionalFormDirty] = useState(false);
 
+    // 메뉴 목록 조회
+    const fetchMenus = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+
+        const { menus: data, error: fetchError } = await menuApi.getMenus();
+
+        if (fetchError) {
+            setError(fetchError);
+        } else {
+            setMenus(data);
+            setFilteredMenus(data);
+        }
+
+        setIsLoading(false);
+    }, []);
+
+    // 메뉴 오브젝트 조회
+    const fetchMenuObjects = useCallback(async (menuId: string) => {
+        setIsLoading(true);
+
+        // 기본 OBJ 조회
+        const { objects: basicData, error: basicError } = await menuApi.getMenuObjects(menuId, 'basic');
+        if (!basicError) {
+            setBasicObjects(basicData);
+        }
+
+        // 추가 OBJ 조회
+        const { objects: additionalData, error: additionalError } = await menuApi.getMenuObjects(menuId, 'additional');
+        if (!additionalError) {
+            setAdditionalObjects(additionalData);
+        }
+
+        setIsLoading(false);
+    }, []);
+
+    // 초기 데이터 로드
+    useEffect(() => {
+        fetchMenus();
+    }, [fetchMenus]);
+
+    // 메뉴 선택 시 오브젝트 조회
+    useEffect(() => {
+        if (selectedMenu) {
+            fetchMenuObjects(selectedMenu.id);
+            // 폼 초기화
+            setBasicForm(initialObjectForm);
+            setAdditionalForm(initialObjectForm);
+            setSelectedBasicObject(null);
+            setSelectedAdditionalObject(null);
+            setBasicFormDirty(false);
+            setAdditionalFormDirty(false);
+        } else {
+            setBasicObjects([]);
+            setAdditionalObjects([]);
+        }
+    }, [selectedMenu, fetchMenuObjects]);
+
+    // 검색 실행
     const handleSearch = () => {
-        alert(`검색 조건:\n시스템: ${system}\n메뉴ID: ${menuId}\n메뉴명: ${menuName}`);
+        if (!searchMenuName.trim()) {
+            setFilteredMenus(menus);
+            return;
+        }
+
+        const filtered = menus.filter(menu =>
+            menu.menu_name.toLowerCase().includes(searchMenuName.toLowerCase()) ||
+            menu.id.toLowerCase().includes(searchMenuName.toLowerCase())
+        );
+        setFilteredMenus(filtered);
     };
 
+    // 검색 조건 초기화
     const handleReset = () => {
-        setSystem('all');
-        setMenuId('');
-        setMenuName('');
+        setSearchMenuName('');
+        setFilteredMenus(menus);
+    };
+
+    // 메뉴 행 클릭
+    const handleMenuRowClick = (params: GridRowParams<Menu>) => {
+        setSelectedMenu(params.row);
+    };
+
+    // 기본 OBJ 행 클릭
+    const handleBasicObjectRowClick = (params: GridRowParams<MenuObject>) => {
+        const obj = params.row;
+        setSelectedBasicObject(obj);
+        setBasicForm({
+            id: obj.id,
+            object_name: obj.object_name,
+            action_url: obj.action_url,
+            action_type: obj.action_type,
+            sort_order: obj.sort_order,
+            log_yn: obj.log_yn ? 'true' : 'false',
+        });
+        setBasicFormDirty(false);
+    };
+
+    // 추가 OBJ 행 클릭
+    const handleAdditionalObjectRowClick = (params: GridRowParams<MenuObject>) => {
+        const obj = params.row;
+        setSelectedAdditionalObject(obj);
+        setAdditionalForm({
+            id: obj.id,
+            object_name: obj.object_name,
+            action_url: obj.action_url,
+            action_type: obj.action_type,
+            sort_order: obj.sort_order,
+            log_yn: obj.log_yn ? 'true' : 'false',
+        });
+        setAdditionalFormDirty(false);
+    };
+
+    // 폼 입력 변경 핸들러
+    const handleBasicFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setBasicForm(prev => ({ ...prev, [name]: value }));
+        setBasicFormDirty(true);
+    };
+
+    const handleBasicSelectChange = (e: SelectChangeEvent<string>) => {
+        const { name, value } = e.target;
+        setBasicForm(prev => ({ ...prev, [name]: value }));
+        setBasicFormDirty(true);
+    };
+
+    const handleAdditionalFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setAdditionalForm(prev => ({ ...prev, [name]: value }));
+        setAdditionalFormDirty(true);
+    };
+
+    const handleAdditionalSelectChange = (e: SelectChangeEvent<string>) => {
+        const { name, value } = e.target;
+        setAdditionalForm(prev => ({ ...prev, [name]: value }));
+        setAdditionalFormDirty(true);
+    };
+
+    // 기본 OBJ 추가
+    const handleAddBasicObject = () => {
+        if (!selectedMenu) {
+            setError('메뉴를 먼저 선택해주세요.');
+            return;
+        }
+        setSelectedBasicObject(null);
+        setBasicForm({
+            ...initialObjectForm,
+            sort_order: basicObjects.length + 1,
+        });
+        setBasicFormDirty(true);
+    };
+
+    // 추가 OBJ 추가
+    const handleAddAdditionalObject = () => {
+        if (!selectedMenu) {
+            setError('메뉴를 먼저 선택해주세요.');
+            return;
+        }
+        setSelectedAdditionalObject(null);
+        setAdditionalForm({
+            ...initialObjectForm,
+            sort_order: additionalObjects.length + 1,
+        });
+        setAdditionalFormDirty(true);
+    };
+
+    // 기본 OBJ 저장
+    const handleSaveBasicObject = async () => {
+        if (!selectedMenu) {
+            setError('메뉴를 먼저 선택해주세요.');
+            return;
+        }
+
+        if (!basicForm.object_name || !basicForm.action_url) {
+            setError('필수 항목을 입력해주세요.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        const input: MenuObjectInput = {
+            menu_id: selectedMenu.id,
+            object_name: basicForm.object_name,
+            action_url: basicForm.action_url,
+            action_type: basicForm.action_type,
+            sort_order: Number(basicForm.sort_order),
+            log_yn: basicForm.log_yn === 'true',
+            obj_type: 'basic',
+        };
+
+        if (selectedBasicObject) {
+            // 수정
+            const { error: updateError } = await menuApi.updateMenuObject(selectedBasicObject.id, input);
+            if (updateError) {
+                setError(updateError);
+            } else {
+                setSuccessMessage('저장되었습니다.');
+                await fetchMenuObjects(selectedMenu.id);
+            }
+        } else {
+            // 생성
+            const { error: createError } = await menuApi.createMenuObject(input);
+            if (createError) {
+                setError(createError);
+            } else {
+                setSuccessMessage('생성되었습니다.');
+                await fetchMenuObjects(selectedMenu.id);
+            }
+        }
+
+        setBasicFormDirty(false);
+        setIsLoading(false);
+        setTimeout(() => setSuccessMessage(null), 3000);
+    };
+
+    // 추가 OBJ 저장
+    const handleSaveAdditionalObject = async () => {
+        if (!selectedMenu) {
+            setError('메뉴를 먼저 선택해주세요.');
+            return;
+        }
+
+        if (!additionalForm.object_name || !additionalForm.action_url) {
+            setError('필수 항목을 입력해주세요.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        const input: MenuObjectInput = {
+            menu_id: selectedMenu.id,
+            object_name: additionalForm.object_name,
+            action_url: additionalForm.action_url,
+            action_type: additionalForm.action_type,
+            sort_order: Number(additionalForm.sort_order),
+            log_yn: additionalForm.log_yn === 'true',
+            obj_type: 'additional',
+        };
+
+        if (selectedAdditionalObject) {
+            // 수정
+            const { error: updateError } = await menuApi.updateMenuObject(selectedAdditionalObject.id, input);
+            if (updateError) {
+                setError(updateError);
+            } else {
+                setSuccessMessage('저장되었습니다.');
+                await fetchMenuObjects(selectedMenu.id);
+            }
+        } else {
+            // 생성
+            const { error: createError } = await menuApi.createMenuObject(input);
+            if (createError) {
+                setError(createError);
+            } else {
+                setSuccessMessage('생성되었습니다.');
+                await fetchMenuObjects(selectedMenu.id);
+            }
+        }
+
+        setAdditionalFormDirty(false);
+        setIsLoading(false);
+        setTimeout(() => setSuccessMessage(null), 3000);
+    };
+
+    // 기본 OBJ 삭제
+    const handleDeleteBasicObject = async () => {
+        if (!selectedBasicObject) {
+            setError('삭제할 오브젝트를 선택해주세요.');
+            return;
+        }
+
+        if (!window.confirm('선택한 오브젝트를 삭제하시겠습니까?')) {
+            return;
+        }
+
+        setIsLoading(true);
+        const { error: deleteError } = await menuApi.deleteMenuObject(selectedBasicObject.id);
+
+        if (deleteError) {
+            setError(deleteError);
+        } else {
+            setSuccessMessage('삭제되었습니다.');
+            setSelectedBasicObject(null);
+            setBasicForm(initialObjectForm);
+            if (selectedMenu) {
+                await fetchMenuObjects(selectedMenu.id);
+            }
+        }
+
+        setIsLoading(false);
+        setTimeout(() => setSuccessMessage(null), 3000);
+    };
+
+    // 추가 OBJ 삭제
+    const handleDeleteAdditionalObject = async () => {
+        if (!selectedAdditionalObject) {
+            setError('삭제할 오브젝트를 선택해주세요.');
+            return;
+        }
+
+        if (!window.confirm('선택한 오브젝트를 삭제하시겠습니까?')) {
+            return;
+        }
+
+        setIsLoading(true);
+        const { error: deleteError } = await menuApi.deleteMenuObject(selectedAdditionalObject.id);
+
+        if (deleteError) {
+            setError(deleteError);
+        } else {
+            setSuccessMessage('삭제되었습니다.');
+            setSelectedAdditionalObject(null);
+            setAdditionalForm(initialObjectForm);
+            if (selectedMenu) {
+                await fetchMenuObjects(selectedMenu.id);
+            }
+        }
+
+        setIsLoading(false);
+        setTimeout(() => setSuccessMessage(null), 3000);
     };
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, p: 3 }}>
             {/* --- 상단 제목 및 조회 영역 --- */}
             <TitleArea title="메뉴 OBJ 관리">
-                <PrintButton onClick={() => alert('인쇄 버튼 클릭')} />
                 <ResetButton onClick={handleReset} />
             </TitleArea>
 
+            {/* 에러/성공 메시지 */}
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+                    {error}
+                </Alert>
+            )}
+            {successMessage && (
+                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccessMessage(null)}>
+                    {successMessage}
+                </Alert>
+            )}
+
             <SearchArea>
-                <FormField label="시스템" htmlFor="system-select">
-                    <Select id="system-select" value={system} onChange={(e) => setSystem(e.target.value)} sx={{ width: '180px' }}>
-                        {systemOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                        ))}
-                    </Select>
+                <FormField label="메뉴명" htmlFor="menu-name-search">
+                    <TextField
+                        id="menu-name-search"
+                        value={searchMenuName}
+                        onChange={(e) => setSearchMenuName(e.target.value)}
+                        sx={{ width: '200px' }}
+                        placeholder="메뉴명 또는 ID"
+                    />
                 </FormField>
                 <SearchIconButton onClick={handleSearch} />
             </SearchArea>
@@ -142,123 +475,191 @@ export default function MenuObjPage() {
 
                 {/* --- 왼쪽 영역 (4) - 메뉴 그리드 --- */}
                 <Box sx={{ flex: 4, display: 'flex', flexDirection: 'column' }}>
-                    <SubTitleArea title="메뉴 목록">
+                    <SubTitleArea title={`메뉴 목록 (${filteredMenus.length}개)`}>
+                        {isLoading && <CircularProgress size={20} />}
                     </SubTitleArea>
                     <DsDataGrid
-                        rows={menuGridRows}
+                        rows={filteredMenus}
                         columns={menuGridColumns}
                         sx={{ flexGrow: 1 }}
                         hideFooter
-                        showRowNumber // 'No' 컬럼 표시
+                        showRowNumber
+                        onRowClick={handleMenuRowClick}
+                        loading={isLoading}
+                        paginationModel={{ page: 0, pageSize: 100 }}
                     />
                 </Box>
 
                 {/* --- 중앙 영역 (3) - 객체/속성 그리드 --- */}
                 <Box sx={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {/* 중앙 상단 */}
+                    {/* 중앙 상단 - 기본 OBJ 리스트 */}
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <SubTitleArea title="OBJ 기본리스트">
-                        </SubTitleArea>
+                        <SubTitleArea title={`기본 OBJ 리스트 (${basicObjects.length}개)`} />
                         <DsDataGrid
-                            rows={objectGridRows}
+                            rows={basicObjects}
                             columns={objectGridColumns}
                             sx={{ flexGrow: 1 }}
                             hideFooter
                             showRowNumber
+                            onRowClick={handleBasicObjectRowClick}
+                            loading={isLoading}
+                            paginationModel={{ page: 0, pageSize: 50 }}
                         />
                     </Box>
-                    {/* 중앙 하단 */}
+                    {/* 중앙 하단 - 추가 OBJ 리스트 */}
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <SubTitleArea title="OBJ 추가리스트">
-                        </SubTitleArea>
+                        <SubTitleArea title={`추가 OBJ 리스트 (${additionalObjects.length}개)`} />
                         <DsDataGrid
-                            rows={propertyGridRows}
-                            columns={propertyGridColumns}
+                            rows={additionalObjects}
+                            columns={objectGridColumns}
                             sx={{ flexGrow: 1 }}
                             hideFooter
                             showRowNumber
+                            onRowClick={handleAdditionalObjectRowClick}
+                            loading={isLoading}
+                            paginationModel={{ page: 0, pageSize: 50 }}
                         />
                     </Box>
                 </Box>
 
                 {/* --- 오른쪽 영역 (3) - 상세 정보 입력 폼 --- */}
                 <Box sx={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {/* ★ 오른쪽 상단: flex: 1을 적용하여 높이를 채웁니다. */}
+                    {/* 오른쪽 상단: 기본 OBJ 폼 */}
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <SubTitleArea title="기본 OBJ">
-                            <AddButton onClick={() => {}} />
-                            <DeleteButton onClick={() => {}} />
-                            <SaveButton onClick={() => {}} />
+                            <AddButton onClick={handleAddBasicObject} disabled={!selectedMenu} />
+                            <DeleteButton onClick={handleDeleteBasicObject} disabled={!selectedBasicObject} />
+                            <SaveButton onClick={handleSaveBasicObject} disabled={!basicFormDirty || isLoading} />
                         </SubTitleArea>
-                        {/* ★ flexGrow: 1을 적용하여 내용이 영역을 채우도록 합니다. */}
-                        <Box sx={{ border: '1px solid', borderColor: 'divider', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                            <FormTableRow label="오브젝트" required>
-                                <Select fullWidth value={selectedObject} onChange={(e) => setSelectedObject(e.target.value as string)}>
-                                    {objectSelectOptions.map((option) => (
+                        <Box sx={{ border: '1px solid', borderColor: 'divider', flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+                            <FormTableRow label="오브젝트명" required>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    name="object_name"
+                                    value={basicForm.object_name}
+                                    onChange={handleBasicFormChange}
+                                    disabled={!selectedMenu}
+                                />
+                            </FormTableRow>
+                            <FormTableRow label="액션 URL" required>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    name="action_url"
+                                    value={basicForm.action_url}
+                                    onChange={handleBasicFormChange}
+                                    disabled={!selectedMenu}
+                                />
+                            </FormTableRow>
+                            <FormTableRow label="정렬순번">
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    type="number"
+                                    name="sort_order"
+                                    value={basicForm.sort_order}
+                                    onChange={handleBasicFormChange}
+                                    disabled={!selectedMenu}
+                                />
+                            </FormTableRow>
+                            <FormTableRow label="동작구분">
+                                <Select
+                                    fullWidth
+                                    name="action_type"
+                                    value={basicForm.action_type}
+                                    onChange={handleBasicSelectChange}
+                                    disabled={!selectedMenu}
+                                >
+                                    {actionTypeOptions.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                                     ))}
                                 </Select>
                             </FormTableRow>
-                            <FormTableRow label="오브젝트명" required>
-                                <TextField fullWidth variant="outlined" value={objectName} onChange={(e) => setObjectName(e.target.value)} />
-                            </FormTableRow>
-                            <FormTableRow label="액션 URL" required>
-                                <TextField fullWidth variant="outlined" value={actionUrl} onChange={(e) => setActionUrl(e.target.value)} />
-                            </FormTableRow>
-                            <FormTableRow label="정렬순번" required>
-                                <TextField fullWidth variant="outlined" type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} />
-                            </FormTableRow>
-                            <FormTableRow label="동작구분" required>
-                                <Select fullWidth value={actionType} onChange={(e) => setActionType(e.target.value as string)}>
-                                    {actionTypeOptions.map((option) => (<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>))}
-                                </Select>
-                            </FormTableRow>
-                            <FormTableRow label="로그" required>
-                                <Select fullWidth value={logYn} onChange={(e) => setLogYn(e.target.value as string)}>
-                                    {logOptions.map((option) => (<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>))}
+                            <FormTableRow label="로그">
+                                <Select
+                                    fullWidth
+                                    name="log_yn"
+                                    value={basicForm.log_yn}
+                                    onChange={handleBasicSelectChange}
+                                    disabled={!selectedMenu}
+                                >
+                                    {logOptions.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormTableRow>
                         </Box>
                     </Box>
-                    {/* ★ 오른쪽 하단: flex: 1을 적용하여 높이를 채웁니다. */}
+
+                    {/* 오른쪽 하단: 추가 OBJ 폼 */}
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <SubTitleArea title="추가 OBJ">
-                            <AddButton onClick={() => {}} />
-                            <DeleteButton onClick={() => {}} />
-                            <SaveButton onClick={() => {}} />
+                            <AddButton onClick={handleAddAdditionalObject} disabled={!selectedMenu} />
+                            <DeleteButton onClick={handleDeleteAdditionalObject} disabled={!selectedAdditionalObject} />
+                            <SaveButton onClick={handleSaveAdditionalObject} disabled={!additionalFormDirty || isLoading} />
                         </SubTitleArea>
-                        {/* ★ flexGrow: 1을 적용하여 내용이 영역을 채우도록 합니다. */}
-                        <Box sx={{ border: '1px solid', borderColor: 'divider', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                            <FormTableRow label="오브젝트" required>
-                                <Select fullWidth value={selectedObject} onChange={(e) => setSelectedObject(e.target.value as string)}>
-                                    {objectSelectOptions.map((option) => (
+                        <Box sx={{ border: '1px solid', borderColor: 'divider', flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+                            <FormTableRow label="오브젝트명" required>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    name="object_name"
+                                    value={additionalForm.object_name}
+                                    onChange={handleAdditionalFormChange}
+                                    disabled={!selectedMenu}
+                                />
+                            </FormTableRow>
+                            <FormTableRow label="액션 URL" required>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    name="action_url"
+                                    value={additionalForm.action_url}
+                                    onChange={handleAdditionalFormChange}
+                                    disabled={!selectedMenu}
+                                />
+                            </FormTableRow>
+                            <FormTableRow label="정렬순번">
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    type="number"
+                                    name="sort_order"
+                                    value={additionalForm.sort_order}
+                                    onChange={handleAdditionalFormChange}
+                                    disabled={!selectedMenu}
+                                />
+                            </FormTableRow>
+                            <FormTableRow label="동작구분">
+                                <Select
+                                    fullWidth
+                                    name="action_type"
+                                    value={additionalForm.action_type}
+                                    onChange={handleAdditionalSelectChange}
+                                    disabled={!selectedMenu}
+                                >
+                                    {actionTypeOptions.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                                     ))}
                                 </Select>
                             </FormTableRow>
-                            <FormTableRow label="오브젝트명" required>
-                                <TextField fullWidth variant="outlined" value={objectName} onChange={(e) => setObjectName(e.target.value)} />
-                            </FormTableRow>
-                            <FormTableRow label="액션 URL" required>
-                                <TextField fullWidth variant="outlined" value={actionUrl} onChange={(e) => setActionUrl(e.target.value)} />
-                            </FormTableRow>
-                            <FormTableRow label="정렬순번" required>
-                                <TextField fullWidth variant="outlined" type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} />
-                            </FormTableRow>
-                            <FormTableRow label="동작구분" required>
-                                <Select fullWidth value={actionType} onChange={(e) => setActionType(e.target.value as string)}>
-                                    {actionTypeOptions.map((option) => (<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>))}
-                                </Select>
-                            </FormTableRow>
-                            <FormTableRow label="로그" required>
-                                <Select fullWidth value={logYn} onChange={(e) => setLogYn(e.target.value as string)}>
-                                    {logOptions.map((option) => (<MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>))}
+                            <FormTableRow label="로그">
+                                <Select
+                                    fullWidth
+                                    name="log_yn"
+                                    value={additionalForm.log_yn}
+                                    onChange={handleAdditionalSelectChange}
+                                    disabled={!selectedMenu}
+                                >
+                                    {logOptions.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormTableRow>
                         </Box>
                     </Box>
                 </Box>
-
             </Box>
         </Box>
     );
