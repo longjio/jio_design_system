@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
     Box,
-    Button,
     Typography,
     TextField,
     FormControlLabel,
@@ -11,6 +10,7 @@ import {
 import DsDialog from '../components/feedback/DsDialog';
 import ComponentShowcase from '../components/common/ComponentShowcase'; // Import ComponentShowcase
 import { PropsTable, PropDefinition } from '../components/common';
+import { DsButton } from '../components/button/DsButton';
 
 const DialogPage = () => {
     // DsDialog Props 정의
@@ -73,17 +73,17 @@ const DialogPage = () => {
     const [isFullScreen, setIsFullScreen] = useState(false);
 
     const alertDialogCode = `
-<Button variant="outlined" onClick={() => setAlertOpen(true)}>
+<DsButton variant="outlined" onClick={() => setAlertOpen(true)}>
     Alert Dialog open
-</Button>
+</DsButton>
 <DsDialog
     open={alertOpen}
     onClose={() => setAlertOpen(false)}
     title="이것은 Alert입니다"
     actions={
-        <Button onClick={() => setAlertOpen(false)} autoFocus>
+        <DsButton onClick={() => setAlertOpen(false)} autoFocus>
             확인
-        </Button>
+        </DsButton>
     }
 >
     <Typography>
@@ -94,23 +94,23 @@ const DialogPage = () => {
     `;
 
     const confirmationDialogCode = `
-<Button variant="outlined" onClick={() => setConfirmOpen(true)}>
+<DsButton variant="outlined" onClick={() => setConfirmOpen(true)}>
     Confirmation Dialog open
-</Button>
+</DsButton>
 <DsDialog
     open={confirmOpen}
     onClose={() => setConfirmOpen(false)}
     title="이 항목을 삭제할까요?"
     actions={
         <>
-            <Button onClick={() => setConfirmOpen(false)}>취소</Button>
-            <Button
+            <DsButton onClick={() => setConfirmOpen(false)}>취소</DsButton>
+            <DsButton
                 variant="contained"
                 color="error"
                 onClick={() => setConfirmOpen(false)}
             >
                 삭제
-            </Button>
+            </DsButton>
         </>
     }
 >
@@ -132,9 +132,9 @@ const DialogPage = () => {
     label="전체 화면으로 open"
 />
 <br />
-<Button variant="outlined" onClick={() => setFormOpen(true)}>
+<DsButton variant="outlined" onClick={() => setFormOpen(true)}>
     Form Dialog open
-</Button>
+</DsButton>
 <DsDialog
     open={formOpen}
     onClose={() => setFormOpen(false)}
@@ -142,13 +142,13 @@ const DialogPage = () => {
     fullScreen={isFullScreen}
     actions={
         <>
-            <Button onClick={() => setFormOpen(false)}>취소</Button>
-            <Button
+            <DsButton onClick={() => setFormOpen(false)}>취소</DsButton>
+            <DsButton
                 variant="contained"
                 onClick={() => setFormOpen(false)}
             >
                 구독하기
-            </Button>
+            </DsButton>
         </>
     }
 >
@@ -183,17 +183,17 @@ const DialogPage = () => {
                 description="Alert Dialog는 사용자에게 특정 상황을 알리고 확인을 요구하는 긴급한 알림입니다."
                 component={
                     <>
-                        <Button variant="outlined" onClick={() => setAlertOpen(true)}>
+                        <DsButton variant="outlined" onClick={() => setAlertOpen(true)}>
                             Alert Dialog open
-                        </Button>
+                        </DsButton>
                         <DsDialog
                             open={alertOpen}
                             onClose={() => setAlertOpen(false)}
                             title="이것은 Alert입니다"
                             actions={
-                                <Button onClick={() => setAlertOpen(false)} autoFocus>
+                                <DsButton onClick={() => setAlertOpen(false)} autoFocus>
                                     확인
-                                </Button>
+                                </DsButton>
                             }
                         >
                             <Typography>
@@ -211,23 +211,23 @@ const DialogPage = () => {
                 description="Confirmation Dialog는 특정 작업을 실행하기 전에 사용자에게 명시적인 확인을 요구합니다."
                 component={
                     <>
-                        <Button variant="outlined" onClick={() => setConfirmOpen(true)}>
+                        <DsButton variant="outlined" onClick={() => setConfirmOpen(true)}>
                             Confirmation Dialog open
-                        </Button>
+                        </DsButton>
                         <DsDialog
                             open={confirmOpen}
                             onClose={() => setConfirmOpen(false)}
                             title="이 항목을 삭제할까요?"
                             actions={
                                 <>
-                                    <Button onClick={() => setConfirmOpen(false)}>취소</Button>
-                                    <Button
+                                    <DsButton onClick={() => setConfirmOpen(false)}>취소</DsButton>
+                                    <DsButton
                                         variant="contained"
                                         color="error"
                                         onClick={() => setConfirmOpen(false)}
                                     >
                                         삭제
-                                    </Button>
+                                    </DsButton>
                                 </>
                             }
                         >
@@ -256,9 +256,9 @@ const DialogPage = () => {
                             label="전체 화면으로 open"
                         />
                         <br />
-                        <Button variant="outlined" onClick={() => setFormOpen(true)}>
+                        <DsButton variant="outlined" onClick={() => setFormOpen(true)}>
                             Form Dialog open
-                        </Button>
+                        </DsButton>
                         <DsDialog
                             open={formOpen}
                             onClose={() => setFormOpen(false)}
@@ -266,13 +266,13 @@ const DialogPage = () => {
                             fullScreen={isFullScreen}
                             actions={
                                 <>
-                                    <Button onClick={() => setFormOpen(false)}>취소</Button>
-                                    <Button
+                                    <DsButton onClick={() => setFormOpen(false)}>취소</DsButton>
+                                    <DsButton
                                         variant="contained"
                                         onClick={() => setFormOpen(false)}
                                     >
                                         구독하기
-                                    </Button>
+                                    </DsButton>
                                 </>
                             }
                         >

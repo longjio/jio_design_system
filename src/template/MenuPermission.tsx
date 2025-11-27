@@ -9,11 +9,7 @@ import { TitleArea, SearchArea, SubTitleArea } from '../layouts';
 import { FormField } from '../components/form/FormField';
 import DsDataGrid from '../components/mui_x/datagrid/DsDataGrid';
 import { DsSwitch } from '../components/input/DsSwitch';
-import {
-    SearchIconButton,
-    ResetButton,
-    SaveButton,
-} from '../components/button';
+import { SearchIconButton, ResetButton, SaveButton } from '../components/button';
 
 import { permissionApi } from '../api';
 import { appRoutes, AppRouteConfig } from '../app-config';
