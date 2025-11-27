@@ -112,10 +112,12 @@ const MenuSection = ({
                                             bgcolor: 'transparent',
                                             border: 'none',
                                             cursor: 'pointer',
-                                            '&:hover': { bgcolor: 'action.hover' },
+                                            '@media (hover: hover)': {
+                                                '&:hover': { bgcolor: 'action.hover' },
+                                            },
                                             borderRadius: 2,
-                                            // ★ 탭 딜레이 제거 (2/4)
                                             touchAction: 'manipulation',
+                                            WebkitTapHighlightColor: 'transparent',
                                         }}
                                         onClick={() => onMenuClick(item.path)}
                                     >
@@ -147,9 +149,13 @@ const MenuSection = ({
                                         sx={{
                                             borderRadius: 2,
                                             py: 1.5,
-                                            '&.Mui-selected': { bgcolor: 'primary.50', '&:hover': { bgcolor: 'primary.100' } },
-                                            // ★ 탭 딜레이 제거 (3/4)
+                                            '&.Mui-selected': { bgcolor: 'primary.50' },
+                                            '@media (hover: hover)': {
+                                                '&:hover': { bgcolor: 'action.hover' },
+                                                '&.Mui-selected:hover': { bgcolor: 'primary.100' },
+                                            },
                                             touchAction: 'manipulation',
+                                            WebkitTapHighlightColor: 'transparent',
                                         }}
                                     >
                                         <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '15px', fontWeight: isSelected ? 600 : 400 }} />
@@ -276,9 +282,12 @@ export default function MobileLayout() {
                                         onClick={() => handleMenuClick(item.path)}
                                         sx={{
                                             flexShrink: 0, borderRadius: '50px', borderColor: 'divider',
-                                            p: 0, '&:hover': { bgcolor: 'action.hover' },
-                                            // ★ 탭 딜레이 제거 (4/4) - 버튼에도 적용
+                                            p: 0,
+                                            '@media (hover: hover)': {
+                                                '&:hover': { bgcolor: 'action.hover' },
+                                            },
                                             touchAction: 'manipulation',
+                                            WebkitTapHighlightColor: 'transparent',
                                         }}
                                     >
                                         <Box sx={{ display: 'flex', alignItems: 'center', px: 2, py: '6px' }}>
@@ -340,8 +349,11 @@ export default function MobileLayout() {
                                 borderRadius: 2,
                                 py: 1.5,
                                 bgcolor: 'error.50',
-                                '&:hover': { bgcolor: 'error.100' },
+                                '@media (hover: hover)': {
+                                    '&:hover': { bgcolor: 'error.100' },
+                                },
                                 touchAction: 'manipulation',
+                                WebkitTapHighlightColor: 'transparent',
                             }}
                         >
                             <ListItemIcon><LogoutIcon sx={{ color: 'error.main' }} /></ListItemIcon>
