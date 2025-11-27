@@ -406,7 +406,17 @@ export default function MobileLayout() {
                 {drawerContent}
             </Drawer>
 
-            <Box component="main" sx={{ flexGrow: 1, pt: isHomePage ? '56px' : 0, overflowY: 'auto' }}>
+            <Box
+                component="main"
+                sx={{
+                    flex: 1,
+                    pt: isHomePage ? '56px' : 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 0,
+                    overflow: 'hidden',
+                }}
+            >
                 <Outlet context={{ handleDrawerToggle }} />
             </Box>
         </Box>

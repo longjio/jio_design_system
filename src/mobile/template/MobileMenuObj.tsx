@@ -65,56 +65,60 @@ export default function MobileMenuObjPage() {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {/* ★ 3. MobileHeader에 onRightIconClick 함수를 전달하여 햄버거 메뉴를 활성화합니다. */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
             <MobileHeader
                 title="메뉴 OBJ 관리"
                 onRightIconClick={handleDrawerToggle}
             />
 
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 4 }}>
-                <Stack spacing={2}>
-                    <Collapse in={isSearchAreaOpen} timeout="auto">
-                        <Box>
-                            <Stack spacing={2}>
-                                <DsSelect
-                                    label="시스템"
-                                    value={system}
-                                    onChange={(e: SelectChangeEvent<string | number>) => setSystem(e.target.value as string)}
-                                    items={systemOptions}
-                                />
-                                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                                    <DsButton variant="outlined" onClick={handleReset} fullWidth>초기화</DsButton>
-                                    <DsButton variant="contained" onClick={handleSearch} fullWidth>검색</DsButton>
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+                <Box sx={{ flex: 1, overflowY: 'auto', p: 4 }}>
+                    <Stack spacing={2}>
+                        <Collapse in={isSearchAreaOpen} timeout="auto">
+                            <Box>
+                                <Stack spacing={2}>
+                                    <DsSelect
+                                        label="시스템"
+                                        value={system}
+                                        onChange={(e: SelectChangeEvent<string | number>) => setSystem(e.target.value as string)}
+                                        items={systemOptions}
+                                    />
                                 </Stack>
-                            </Stack>
-                        </Box>
-                    </Collapse>
+                            </Box>
+                        </Collapse>
 
-                    <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column',  }}>
-                        <Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            sx={{ p: 2 }}
-                        >
-                            <TitleXS component="h2">메뉴 목록</TitleXS>
-                            <IconButton onClick={toggleSearchArea} aria-label="toggle search area" size="small">
-                                {isSearchAreaOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                            </IconButton>
-                        </Stack>
-                        <Divider />
-                        <Box sx={{ flexGrow: 1, height: 400 }}>
-                            <DsDataGrid
-                                rows={menuGridRows}
-                                columns={menuGridColumns}
-                                showRowNumber
-                                hideFooter
-                                sx={{ border: 0 }}
-                            />
+                        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                            <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                sx={{ p: 2 }}
+                            >
+                                <TitleXS component="h2">메뉴 목록</TitleXS>
+                                <IconButton onClick={toggleSearchArea} aria-label="toggle search area" size="small">
+                                    {isSearchAreaOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                </IconButton>
+                            </Stack>
+                            <Divider />
+                            <Box sx={{ flexGrow: 1, height: 400 }}>
+                                <DsDataGrid
+                                    rows={menuGridRows}
+                                    columns={menuGridColumns}
+                                    showRowNumber
+                                    hideFooter
+                                    sx={{ border: 0 }}
+                                />
+                            </Box>
                         </Box>
-                    </Box>
-                </Stack>
+                    </Stack>
+                </Box>
+
+                <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', bgcolor: 'background.paper', flexShrink: 0 }}>
+                    <Stack direction="row" spacing={1}>
+                        <DsButton variant="outlined" onClick={handleReset} fullWidth size="xlarge">초기화</DsButton>
+                        <DsButton variant="contained" onClick={handleSearch} fullWidth size="xlarge">검색</DsButton>
+                    </Stack>
+                </Box>
             </Box>
         </Box>
     );

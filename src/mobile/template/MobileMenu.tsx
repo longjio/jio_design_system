@@ -90,7 +90,7 @@ export default function MobileMenuPage() {
     return (
         // --- ★ 5. Date Picker를 사용하기 위해 LocalizationProvider로 감싸기 ---
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
                 <MobileHeader
                     title="메뉴 관리"
                     onRightIconClick={handleDrawerToggle}
